@@ -8,10 +8,10 @@ export function useAnimatedCounters(
     const startedRef = useRef(false);
 
     const animateCounters = useCallback(() => {
-        if (startedRef.current) return; // prevent multiple runs
+        if (startedRef.current) return;
         startedRef.current = true;
 
-        const targets = { clients: 500, specialists: 35, experience: 5 }; // ✅ correct targets
+        const targets = { clients: 500, specialists: 35, experience: 5 };
         const duration = 2000;
         const steps = 60;
         const increment = duration / steps;
@@ -29,7 +29,7 @@ export function useAnimatedCounters(
 
             if (step >= steps) {
                 clearInterval(timer);
-                setCounters(targets); // ✅ force final values
+                setCounters(targets);
             }
         }, increment);
     }, []);

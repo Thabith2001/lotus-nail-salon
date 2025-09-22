@@ -1,28 +1,39 @@
 "use client";
-import React, {useEffect, useState} from "react";
-import {Users, Award, Star, Sparkles, ArrowRight} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Users, Award, Star, Sparkles, ArrowRight } from "lucide-react";
 import Button from "@/components/buttons/buttons";
-import {useRouter} from "next/navigation";
-import {useAuth} from "@/context/contextAuth";
-import {useAuthModal} from "@/context/authModelContext";
-import Auth from "@/components/ui/auth";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/contextAuth";
+import { useAuthModal } from "@/context/authModelContext";
+import { useAnimatedCounters } from "@/hooks/useCounter";
 
+const Stats = () => {
+    const [isVisible, setIsVisible] = useState(false);
+    const { counters, animateCounters } = useAnimatedCounters();
 
-const Stats = ({counters = {}, isVisible, setIsVisible}) => {
-
-
-    const {user, logout} = useAuth();
+    const { user } = useAuth();
     const router = useRouter();
-    const { isAuthOpen, openAuth } = useAuthModal();
+    const { openAuth } = useAuthModal();
 
+    // Detect when section is visible
     useEffect(() => {
         const handleScroll = () => {
-            setIsVisible(window.scrollY > 100);
+            const section = document.getElementById("stats-section");
+            if (!section) return;
+
+            const rect = section.getBoundingClientRect();
+            const fullyVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+
+            if (fullyVisible && !isVisible) {
+                setIsVisible(true);
+                animateCounters();
+            }
         };
 
         window.addEventListener("scroll", handleScroll);
+        handleScroll(); // run once on mount in case it's already visible
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [setIsVisible]);
+    }, [isVisible, animateCounters]);
 
     return (
         <section
@@ -39,15 +50,14 @@ const Stats = ({counters = {}, isVisible, setIsVisible}) => {
                         }`}
                     >
                         <div className="mb-4">
-                            <div
-                                className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                            <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
                                 {counters.clients}+
                             </div>
                             <div className="text-white/60 font-light text-sm uppercase tracking-wider mt-2">
                                 Happy Clients
                             </div>
                         </div>
-                        <Users className="w-8 h-8 text-pink-300 mx-auto opacity-60"/>
+                        <Users className="w-8 h-8 text-pink-300 mx-auto opacity-60" />
                     </div>
 
                     {/* Rating */}
@@ -57,8 +67,7 @@ const Stats = ({counters = {}, isVisible, setIsVisible}) => {
                         }`}
                     >
                         <div className="mb-4">
-                            <div
-                                className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                            <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
                                 5.0
                             </div>
                             <div className="text-white/60 font-light text-sm uppercase tracking-wider mt-2">
@@ -67,10 +76,7 @@ const Stats = ({counters = {}, isVisible, setIsVisible}) => {
                         </div>
                         <div className="flex justify-center space-x-1">
                             {[...Array(5)].map((_, i) => (
-                                <Star
-                                    key={i}
-                                    className="w-4 h-4 text-yellow-400 fill-current"
-                                />
+                                <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                             ))}
                         </div>
                     </div>
@@ -82,15 +88,14 @@ const Stats = ({counters = {}, isVisible, setIsVisible}) => {
                         }`}
                     >
                         <div className="mb-4">
-                            <div
-                                className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                            <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
                                 {counters.specialists}+
                             </div>
                             <div className="text-white/60 font-light text-sm uppercase tracking-wider mt-2">
                                 Nail Artists
                             </div>
                         </div>
-                        <Award className="w-8 h-8 text-pink-300 mx-auto opacity-60"/>
+                        <Award className="w-8 h-8 text-pink-300 mx-auto opacity-60" />
                     </div>
 
                     {/* Experience */}
@@ -100,15 +105,14 @@ const Stats = ({counters = {}, isVisible, setIsVisible}) => {
                         }`}
                     >
                         <div className="mb-4">
-                            <div
-                                className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                            <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
                                 {counters.experience}
                             </div>
                             <div className="text-white/60 font-light text-sm uppercase tracking-wider mt-2">
                                 Years Experience
                             </div>
                         </div>
-                        <Sparkles className="w-8 h-8 text-pink-300 mx-auto opacity-60"/>
+                        <Sparkles className="w-8 h-8 text-pink-300 mx-auto opacity-60" />
                     </div>
                 </div>
 
@@ -124,19 +128,19 @@ const Stats = ({counters = {}, isVisible, setIsVisible}) => {
                         </p>
 
                         <Button
-                            onClick={user ? () => router.push("/booking") : () =>openAuth(true)}
-                            label={<span className="flex items-center gap-2">
-                                <Sparkles className="w-5 h-5"/>
-                                Book Your Appointment
-                                <ArrowRight
-                                    className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"/>
-                            </span>}
+                            onClick={user ? () => router.push("/booking") : () => openAuth(true)}
+                            label={
+                                <span className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Book Your Appointment
+                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+                            }
                             theme="group px-10 py-4 bg-gradient-to-r from-pink-500 to-purple-600
-             text-white font-bold rounded-full shadow-2xl
-             hover:shadow-pink-500/25 transition-all duration-300
-             hover:scale-105 inline-flex items-center gap-2"
+               text-white font-bold rounded-full shadow-2xl
+               hover:shadow-pink-500/25 transition-all duration-300
+               hover:scale-105 inline-flex items-center gap-2"
                         />
-
                     </div>
                 </div>
             </div>

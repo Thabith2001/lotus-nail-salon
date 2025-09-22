@@ -6,26 +6,29 @@ if (!MONGODB_URI) {
     throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-let isConnected = false; // track connection
+let cached = global.mongoose;
+
+if (!cached) {
+    cached = global.mongoose = { conn: null, promise: null };
+}
 
 async function connectDB() {
-    if (isConnected) {
-        console.log("MongoDB already connected");
-        return;
+    if (cached.conn) {
+        console.log("MongoDB already connected ");
+        return cached.conn;
     }
 
-    try {
-        const db = await mongoose.connect(MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
+    if (!cached.promise) {
+        cached.promise = mongoose.connect(MONGODB_URI, {
+            bufferCommands: false,
+        }).then((mongoose) => {
+            console.log("MongoDB connected ");
+            return mongoose;
         });
-
-        isConnected = !!db.connections[0].readyState;
-        console.log("MongoDB connected");
-    } catch (error) {
-        console.error("MongoDB connection error:", error);
-        throw error;
     }
+
+    cached.conn = await cached.promise;
+    return cached.conn;
 }
 
 export default connectDB;
