@@ -44,7 +44,7 @@ export async function POST(req) {
             { expiresIn: "7d" }
         );
 
-        user.password = undefined; // Remove password before sending
+        user.password = undefined;
 
         return new Response(
             JSON.stringify({
