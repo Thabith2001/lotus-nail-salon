@@ -1,4 +1,4 @@
-import {connectDB} from "@/lib/mongoose";
+import { connectDB } from "@/lib/mongoose";
 import User from "@/model/userModel";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -16,8 +16,7 @@ export async function POST(req) {
             );
         }
 
-
-        // Look up by email OR phone
+        // Look up user by email OR phone
         const user = await User.findOne({
             $or: [{ email: identifier }, { phone: identifier }],
         }).select("+password");
@@ -25,17 +24,16 @@ export async function POST(req) {
         if (!user) {
             return new Response(
                 JSON.stringify({ message: "User not found" }),
-                { status: 400 }
+                { status: 404 }
             );
         }
 
-        console.log(await bcrypt.compare(password, user.password))
-
+        // Compare password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return new Response(
                 JSON.stringify({ message: "Invalid credentials" }),
-                { status: 400 }
+                { status: 401 }
             );
         }
 
@@ -46,7 +44,7 @@ export async function POST(req) {
             { expiresIn: "7d" }
         );
 
-        user.password = undefined;
+        user.password = undefined; // Remove password before sending
 
         return new Response(
             JSON.stringify({
