@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Users, Award, Star, Sparkles, ArrowRight } from "lucide-react";
 import Button from "@/components/buttons/buttons";
 import { useRouter } from "next/navigation";
@@ -14,30 +14,31 @@ const Stats = () => {
     const { user } = useAuth();
     const router = useRouter();
     const { openAuth } = useAuthModal();
+    const sectionRef = useRef(null);
 
-    // Detect when section is visible
+    // Detect when section enters viewport
     useEffect(() => {
-        const handleScroll = () => {
-            const section = document.getElementById("stats-section");
-            if (!section) return;
+        if (!sectionRef.current) return;
 
-            const rect = section.getBoundingClientRect();
-            const fullyVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    animateCounters();
+                    observer.disconnect(); // ensures it only runs once
+                }
+            },
+            { threshold: 0.3 } // trigger when 30% visible
+        );
 
-            if (fullyVisible && !isVisible) {
-                setIsVisible(true);
-                animateCounters();
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        handleScroll(); // run once on mount in case it's already visible
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [isVisible, animateCounters]);
+        observer.observe(sectionRef.current);
+        return () => observer.disconnect();
+    }, [animateCounters]);
 
     return (
         <section
             id="stats-section"
+            ref={sectionRef}
             className="bg-white/5 backdrop-blur-lg border-t border-white/10"
         >
             <div className="max-w-6xl mx-auto px-6 py-16">
@@ -131,15 +132,15 @@ const Stats = () => {
                             onClick={user ? () => router.push("/booking") : () => openAuth(true)}
                             label={
                                 <span className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  Book Your Appointment
-                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
+                                    <Sparkles className="w-5 h-5" />
+                                    Book Your Appointment
+                                    <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                                </span>
                             }
                             theme="group px-10 py-4 bg-gradient-to-r from-pink-500 to-purple-600
-               text-white font-bold rounded-full shadow-2xl
-               hover:shadow-pink-500/25 transition-all duration-300
-               hover:scale-105 inline-flex items-center gap-2"
+                                text-white font-bold rounded-full shadow-2xl
+                                hover:shadow-pink-500/25 transition-all duration-300
+                                hover:scale-105 inline-flex items-center gap-2"
                         />
                     </div>
                 </div>
