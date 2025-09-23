@@ -44,6 +44,7 @@ const Header = () => {
         setIsMenuOpen(false);
     }, [openAuth]);
 
+    // ✅ Fixed scroll to section
     const handleScrollTo = useCallback(
         (id) => {
             if (pathname !== "/") {
@@ -55,12 +56,17 @@ const Header = () => {
             const element = document.getElementById(id);
             if (element) {
                 setIsMenuOpen(false);
-                element.scrollIntoView({ behavior: "smooth", block: "start" });
-                setActiveSection(id);
-                const newUrl = id === "home" ? "/" : `/#${id}`;
-                if (window.location.pathname + window.location.hash !== newUrl) {
-                    window.history.replaceState(null, "", newUrl);
-                }
+
+                // Wait for menu to close before scrolling
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                    setActiveSection(id);
+
+                    const newUrl = id === "home" ? "/" : `/#${id}`;
+                    if (window.location.pathname + window.location.hash !== newUrl) {
+                        window.history.replaceState(null, "", newUrl);
+                    }
+                }, 300); // match drawer animation
             }
         },
         [pathname, router]
@@ -93,8 +99,11 @@ const Header = () => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         const sectionId = entry.target.id;
-                        setActiveSection((prev) => (prev !== sectionId ? sectionId : prev));
-                        const newUrl = sectionId === "home" ? "/" : `/#${sectionId}`;
+                        setActiveSection((prev) =>
+                            prev !== sectionId ? sectionId : prev
+                        );
+                        const newUrl =
+                            sectionId === "home" ? "/" : `/#${sectionId}`;
                         if (window.location.pathname + window.location.hash !== newUrl) {
                             window.history.replaceState(null, "", newUrl);
                         }
@@ -114,7 +123,8 @@ const Header = () => {
             window.requestAnimationFrame(handleScroll);
         };
         window.addEventListener("scroll", handleDebouncedScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleDebouncedScroll);
+        return () =>
+            window.removeEventListener("scroll", handleDebouncedScroll);
     }, [handleScroll]);
 
     // Body overflow control
@@ -133,12 +143,21 @@ const Header = () => {
     // Close menu on route change
     useEffect(() => setIsMenuOpen(false), [pathname]);
 
-    // Set active section from URL hash
+    // ✅ Auto-scroll if URL has hash after route change
     useEffect(() => {
         if (pathname === "/") {
             const hash = window.location.hash.replace("#", "");
-            if (hash && links.some((link) => link.href === `#${hash}`)) setActiveSection(hash);
-            else if (!hash) setActiveSection("home");
+            if (hash) {
+                const element = document.getElementById(hash);
+                if (element) {
+                    setTimeout(() => {
+                        element.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 200);
+                    setActiveSection(hash);
+                }
+            } else {
+                setActiveSection("home");
+            }
         }
     }, [pathname]);
 
@@ -174,7 +193,9 @@ const Header = () => {
             <span className="text-lg font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
               Lotus Salon
             </span>
-                        <span className="text-[10px] text-gray-200 font-light tracking-wider">LUXURY NAILS</span>
+                        <span className="text-[10px] text-gray-200 font-light tracking-wider">
+              LUXURY NAILS
+            </span>
                     </div>
                 </Link>
 
@@ -220,7 +241,9 @@ const Header = () => {
                                             className="block px-6 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors duration-150 font-medium"
                                             onClick={closeMenus}
                                         >
-                                            {user.role === "admin" ? "Admin Dashboard" : "My Bookings"}
+                                            {user.role === "admin"
+                                                ? "Admin Dashboard"
+                                                : "My Bookings"}
                                         </Link>
                                         <hr className="border-gray-200 my-1" />
                                         <button
@@ -263,13 +286,12 @@ const Header = () => {
             )}
 
             {/* Mobile Menu */}
-            {/* Mobile Menu */}
             <div
-                className={`lg:hidden fixed inset-y-0 right-0 z-40 w-72 sm:w-80 max-w-full bg-gradient-to-br from-purple-950/95 to-pink-950/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out border-l border-white/20 
-    ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+                className={`lg:hidden fixed inset-y-0 right-0 z-40 w-72 sm:w-80 max-w-full bg-gradient-to-br from-purple-950/95 to-pink-950/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out border-l border-white/20 ${
+                    isMenuOpen ? "translate-x-0" : "translate-x-full"
+                }`}
             >
                 <div className="flex flex-col h-full overflow-y-auto max-h-[100vh]">
-
                     {/* Top bar inside menu */}
                     <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
                         <div className="flex items-center space-x-2">
@@ -281,8 +303,8 @@ const Header = () => {
                                 className="rounded-full"
                             />
                             <span className="text-lg font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-          Lotus Salon
-        </span>
+                Lotus Salon
+              </span>
                         </div>
                         <button
                             onClick={closeMenus}
@@ -321,7 +343,9 @@ const Header = () => {
                                     <p className="text-lg text-white font-medium mb-1 truncate">
                                         Hi, {user.username || user.name}
                                     </p>
-                                    <p className="text-sm text-white/60 capitalize">{user.role} Account</p>
+                                    <p className="text-sm text-white/60 capitalize">
+                                        {user.role} Account
+                                    </p>
                                 </div>
 
                                 <Link
