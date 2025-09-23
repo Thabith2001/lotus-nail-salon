@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
-import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import React, {useContext, useEffect, useState} from "react";
+import {useStripe, useElements, PaymentElement} from "@stripe/react-stripe-js";
 import axios from "axios";
+import {paymentContext} from "@/app/billing/[...slug]/page";
 
-const CheckOut = ({ amount }) => {
+const CheckOut = () => {
 
-
+    const paymentDetails = useContext(paymentContext);
+    const amount = paymentDetails?.price ?? 0;
 
     const stripe = useStripe();
     const elements = useElements();
@@ -19,7 +21,7 @@ const CheckOut = ({ amount }) => {
     useEffect(() => {
         const fetchClientSecret = async () => {
             try {
-                const { data } = await axios.post("/api/create-payment-intent", { amount });
+                const {data} = await axios.post("/api/create-payment-intent", {amount});
                 setClientSecret(data.clientSecret);
             } catch (error) {
                 setErrorMessage("Failed to initialize payment.");
@@ -37,16 +39,16 @@ const CheckOut = ({ amount }) => {
         setErrorMessage("");
 
         try {
-            // ✅ First, submit the PaymentElement
-            const { error: submitError } = await elements.submit();
+            //  First, submit the PaymentElement
+            const {error: submitError} = await elements.submit();
             if (submitError) {
                 setErrorMessage(submitError.message);
                 setLoading(false);
                 return;
             }
 
-            // ✅ Then confirm the payment
-            const { error, paymentIntent } = await stripe.confirmPayment({
+            //  Then confirm the payment
+            const {error, paymentIntent} = await stripe.confirmPayment({
                 elements,
                 clientSecret,
                 confirmParams: {
@@ -68,7 +70,7 @@ const CheckOut = ({ amount }) => {
     return (
         <form onSubmit={handleSubmit} className="flex flex-col w-full p-4">
 
-            {clientSecret ? <PaymentElement className="mb-4" /> : <p>Loading payment...</p>}
+            {clientSecret ? <PaymentElement className="mb-4"/> : <p>Loading payment...</p>}
 
             {errorMessage && <p className="text-red-500 mb-2">{errorMessage}</p>}
             {success && <p className="text-green-500 mb-2">Payment successful 🎉</p>}

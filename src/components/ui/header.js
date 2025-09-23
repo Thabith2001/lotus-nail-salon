@@ -22,12 +22,12 @@ const Header = () => {
     const pathname = usePathname();
     const dropdownRef = useRef(null);
 
-    // Scroll handler
+
     const handleScroll = useCallback(() => {
         setIsScrolled(window.scrollY > 10);
     }, []);
 
-    // Close menus
+
     const closeMenus = useCallback(() => {
         setIsMenuOpen(false);
         setDropdownOpen(false);
@@ -44,7 +44,7 @@ const Header = () => {
         setIsMenuOpen(false);
     }, [openAuth]);
 
-    // ✅ Fixed scroll to section
+
     const handleScrollTo = useCallback(
         (id) => {
             if (pathname !== "/") {
@@ -57,7 +57,7 @@ const Header = () => {
             if (element) {
                 setIsMenuOpen(false);
 
-                // Wait for menu to close before scrolling
+
                 setTimeout(() => {
                     element.scrollIntoView({ behavior: "smooth", block: "start" });
                     setActiveSection(id);
@@ -66,13 +66,13 @@ const Header = () => {
                     if (window.location.pathname + window.location.hash !== newUrl) {
                         window.history.replaceState(null, "", newUrl);
                     }
-                }, 300); // match drawer animation
+                }, 300);
             }
         },
         [pathname, router]
     );
 
-    // Close dropdown when clicking outside
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -83,7 +83,7 @@ const Header = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Track sections via IntersectionObserver
+
     useEffect(() => {
         if (pathname !== "/") return;
 
@@ -117,7 +117,7 @@ const Header = () => {
         return () => sections.forEach((section) => observer.unobserve(section));
     }, [pathname]);
 
-    // Scroll event
+
     useEffect(() => {
         const handleDebouncedScroll = () => {
             window.requestAnimationFrame(handleScroll);
@@ -127,7 +127,7 @@ const Header = () => {
             window.removeEventListener("scroll", handleDebouncedScroll);
     }, [handleScroll]);
 
-    // Body overflow control
+
     useEffect(() => {
         if (isMenuOpen) {
             document.body.style.overflow = "hidden";
@@ -140,10 +140,10 @@ const Header = () => {
         }
     }, [isMenuOpen]);
 
-    // Close menu on route change
+
     useEffect(() => setIsMenuOpen(false), [pathname]);
 
-    // ✅ Auto-scroll if URL has hash after route change
+
     useEffect(() => {
         if (pathname === "/") {
             const hash = window.location.hash.replace("#", "");

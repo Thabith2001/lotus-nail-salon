@@ -24,19 +24,6 @@ export default function ClientLayout({ children }) {
         setMounted(true);
     }, []);
 
-
-
-    const [prevPath, setPrevPath] = useState(null);
-
-    useEffect(() => {
-        if (prevPath !== pathname) {
-            console.log(`🔄 Path changed: ${prevPath} ➝ ${pathname}`);
-            setPrevPath(pathname);
-        }
-    }, [pathname, prevPath]);
-
-
-
     const hideHeaderFooter =
         pathname?.startsWith("/billing");
 
