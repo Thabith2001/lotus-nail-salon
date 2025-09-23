@@ -263,14 +263,37 @@ const Header = () => {
             )}
 
             {/* Mobile Menu */}
+            {/* Mobile Menu */}
             <div
-                className={`lg:hidden fixed inset-y-0 right-0 z-40 w-80 max-w-full bg-gradient-to-br from-purple-950/95 to-pink-950/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out border-l border-white/20 ${
-                    isMenuOpen ? "translate-x-0" : "translate-x-full"
-                }`}
+                className={`lg:hidden fixed inset-y-0 right-0 z-40 w-72 sm:w-80 max-w-full bg-gradient-to-br from-purple-950/95 to-pink-950/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out border-l border-white/20 
+    ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
             >
-                <div className="flex flex-col h-full pt-20 pb-6 px-6">
+                <div className="flex flex-col h-full overflow-y-auto max-h-[100vh]">
+
+                    {/* Top bar inside menu */}
+                    <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
+                        <div className="flex items-center space-x-2">
+                            <Image
+                                src="/images/lotus_logo.png"
+                                alt="Lotus Logo"
+                                width={28}
+                                height={28}
+                                className="rounded-full"
+                            />
+                            <span className="text-lg font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+          Lotus Salon
+        </span>
+                        </div>
+                        <button
+                            onClick={closeMenus}
+                            className="p-2 rounded-lg text-pink-400 hover:bg-white/10 transition-colors duration-200"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+                    </div>
+
                     {/* Navigation Links */}
-                    <nav className="flex-1 space-y-4">
+                    <nav className="flex-1 px-4 py-6 space-y-3">
                         {links.map((item, index) => {
                             const sectionId = item.href.replace("#", "");
                             const isActive = activeSection === sectionId;
@@ -278,7 +301,7 @@ const Header = () => {
                                 <button
                                     key={index}
                                     onClick={() => handleScrollTo(sectionId)}
-                                    className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 ${
+                                    className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 ${
                                         isActive
                                             ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 font-semibold bg-white/20"
                                             : "text-gray-200 hover:text-pink-400 hover:bg-white/10"
@@ -291,11 +314,11 @@ const Header = () => {
                     </nav>
 
                     {/* Auth Section */}
-                    <div className="border-t border-white/20 pt-6 space-y-4">
+                    <div className="border-t border-white/20 px-4 py-6 space-y-4">
                         {user ? (
                             <>
                                 <div className="text-center">
-                                    <p className="text-lg text-white font-medium mb-2">
+                                    <p className="text-lg text-white font-medium mb-1 truncate">
                                         Hi, {user.username || user.name}
                                     </p>
                                     <p className="text-sm text-white/60 capitalize">{user.role} Account</p>

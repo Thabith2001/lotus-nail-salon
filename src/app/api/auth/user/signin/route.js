@@ -16,7 +16,7 @@ export async function POST(req) {
             );
         }
 
-        // Look up user by email OR phone
+
         const user = await User.findOne({
             $or: [{ email: identifier }, { phone: identifier }],
         }).select("+password");
