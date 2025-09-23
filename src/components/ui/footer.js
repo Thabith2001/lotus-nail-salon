@@ -175,7 +175,7 @@ const Footer = () => {
                                     <div className="space-y-2">
                                         {services.slice(0, 4).map((service, index) => (
                                             <div key={index} className="text-white/60 text-sm">
-                                                • {service}
+                                                • {service.name}
                                             </div>
                                         ))}
                                     </div>

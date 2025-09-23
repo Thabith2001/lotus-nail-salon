@@ -30,12 +30,69 @@ export const businessHours = [
 ];
 
 export const services = [
-    'Manicure & Pedicure',
-    'Nail Art Design',
-    'Gel Extensions',
-    'Acrylic Nails',
-    'Nail Repair',
-    'Spa Treatments'
+    {
+        id: 1,
+        name: "Classic Manicure",
+        category: "manicure",
+        duration: 45,
+        price: 45,
+        description: "Basic nail care with polish application",
+        popular: false
+    },
+    {
+        id: 2,
+        name: "Luxury Gel Manicure",
+        category: "manicure",
+        duration: 60,
+        price: 65,
+        description: "Premium gel manicure with custom color selection and nail art",
+        popular: true
+    },
+    {
+        id: 3,
+        name: "Classic Pedicure",
+        category: "pedicure",
+        duration: 50,
+        price: 55,
+        description: "Relaxing foot treatment with nail care and polish",
+        popular: false
+    },
+    {
+        id: 4,
+        name: "Spa Pedicure Deluxe",
+        category: "pedicure",
+        duration: 75,
+        price: 85,
+        description: "Luxury foot spa experience with exfoliation and massage",
+        popular: true
+    },
+    {
+        id: 5,
+        name: "Custom Nail Art",
+        category: "nail-art",
+        duration: 90,
+        price: 95,
+        description: "Personalized nail art design with premium materials",
+        popular: false
+    },
+    {
+        id: 6,
+        name: "Mani-Pedi Package",
+        category: "package",
+        duration: 120,
+        price: 140,
+        description: "Complete nail care package with both manicure and pedicure",
+        popular: true
+    },
+    {
+        id: 7,
+        name: "VIP Membership",
+        category: "membership",
+        duration: 0,
+        price: 199,
+        description: "Monthly membership with unlimited basic services",
+        popular: false
+    }
 ];
 
 
@@ -197,12 +254,10 @@ export const features = [
 ];
 
 export const timeSlots = [
-    '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
-    '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM',
-    '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM',
-    '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM'
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
 ];
-
 
 export const contactMethods = [
     {
@@ -327,7 +382,7 @@ export const packages = [
         duration: 120,
         popularity: 'Great Value',
         services: ['Classic Manicure', 'Express Pedicure', 'Hand Treatment'],
-        features: ['Same-day bookingComponents', 'Complimentary refreshments', 'Aftercare products'],
+        features: ['Same-day bookingSteps', 'Complimentary refreshments', 'Aftercare products'],
         recommended: false,
         color: 'from-blue-500 to-cyan-500'
     },
@@ -342,7 +397,7 @@ export const packages = [
         duration: 180,
         popularity: 'Most Popular',
         services: ['Gel Manicure', 'Luxury Spa Pedicure', 'Mini Nail Art', 'Hand & Foot Massage'],
-        features: ['Priority bookingComponents', 'Champagne service', 'Take-home kit', 'Photo session'],
+        features: ['Priority bookingSteps', 'Champagne service', 'Take-home kit', 'Photo session'],
         recommended: true,
         color: 'from-pink-500 to-purple-600'
     },
@@ -376,7 +431,7 @@ export const memberships = [
         features: [
             '2 gel manicures monthly',
             '10% off additional services',
-            'Priority bookingComponents',
+            'Priority bookingSteps',
             'Member-only events',
             'Free nail consultations'
         ],
@@ -397,7 +452,7 @@ export const memberships = [
             '2 gel manicures monthly',
             '1 luxury pedicure monthly',
             '15% off additional services',
-            'Express lane bookingComponents',
+            'Express lane bookingSteps',
             'Complimentary upgrades'
         ],
         benefits: ['Guest privileges', 'Seasonal promotions', 'Premium aftercare'],

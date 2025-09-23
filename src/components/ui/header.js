@@ -237,7 +237,7 @@ const Header = () => {
                                 {dropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-56 bg-white/95 backdrop-blur-lg shadow-2xl rounded-2xl py-2 z-50 border border-white/20 animate-in slide-in-from-top-2 duration-200">
                                         <Link
-                                            href={user.role === "admin" ? "/admin" : "/booking"}
+                                            href={user.role === "admin" ? "/admin" : "/appointment-details"}
                                             className="block px-6 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors duration-150 font-medium"
                                             onClick={closeMenus}
                                         >
@@ -349,7 +349,7 @@ const Header = () => {
                                 </div>
 
                                 <Link
-                                    href={user.role === "admin" ? "/admin" : "/booking"}
+                                    href={user.role === "admin" ? "/admin" : "/appointment-details"}
                                     onClick={closeMenus}
                                     className="block w-full"
                                 >
