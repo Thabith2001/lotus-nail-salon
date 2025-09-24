@@ -16,14 +16,30 @@ import {
     Users,
     Calendar
 } from 'lucide-react';
-import {links, businessHours, socialLinks, services} from "@/data/data";
+import {links, businessHours, socialLinks} from "@/data/data";
 import {useSparkles} from "@/hooks/useSparkles";
+import axios from "axios";
 
 const Footer = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [email, setEmail] = useState('');
     const [showScrollTop, setShowScrollTop] = useState(false);
     const sparkle = useSparkles(15);
+    const [services, setServices] = useState([]);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const res = await axios.get("/api/services");
+                setServices(res.data.services);
+            } catch (err) {
+                console.error("Error fetching services:", err);
+            }
+        };
+
+        fetchServices();
+    }, []);
+
 
     useEffect(() => {
         const observer = new IntersectionObserver(

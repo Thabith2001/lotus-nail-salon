@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, {useRef, useState} from "react";
 import { Tag } from "lucide-react";
 import { pricing_categories } from "@/data/data";
 import { useSparkles } from "@/hooks/useSparkles";
-import RenderIndividualServices from "@/components/pricingRendering/renderIndividualServices";
 import RenderPackages from "@/components/pricingRendering/renderPackages";
 import RenderMemberships from "@/components/pricingRendering/renderMembership";
 import { useGsap } from "@/hooks/useGsap";
@@ -17,7 +16,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Pricing = () => {
     const containerRef = useRef(null);
-    const [activeCategory, setActiveCategory] = React.useState("individual");
+    const [activeCategory, setActiveCategory] = useState("packages");
     const sparkles = useSparkles(20);
     const { user } = useAuth();
     const { openAuth } = useAuthModal();
@@ -97,9 +96,6 @@ const Pricing = () => {
 
                 {/* Content */}
                 <div className="fade-in">
-                    {activeCategory === "individual" && (
-                        <RenderIndividualServices user={user} openAuth={openAuth} />
-                    )}
                     {activeCategory === "packages" && (
                         <RenderPackages user={user} openAuth={openAuth} />
                     )}

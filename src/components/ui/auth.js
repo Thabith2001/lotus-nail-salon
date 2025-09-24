@@ -141,14 +141,14 @@ const Auth = () => {
         try {
             let res;
             if (view === "signup") {
-                res = await axios.post("/api/auth/user/signup", {
+                res = await axios.post("/api/auth/user/register", {
                     username: form.name,
                     email: form.email,
                     phone: form.phone,
                     password: form.password,
                 });
             } else if (view === "signin") {
-                res = await axios.post("/api/auth/user/signin", {
+                res = await axios.post("/api/auth/user/login", {
                     identifier: form.identifier,
                     password: form.password,
                 });

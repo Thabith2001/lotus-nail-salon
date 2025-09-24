@@ -31,7 +31,6 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en" className={`${inter_Tight.variable}`}>
         <body className="font-sans">
-
         <ClientLayout>{children}</ClientLayout>
         </body>
         </html>

@@ -1,7 +1,9 @@
-import { connectDB } from "@/lib/mongoose";
-import User from "@/model/userModel";
+
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import User from "@/model/userModel";
+import {connectDB} from "@/lib/mongoose";
+
 
 export async function POST(req) {
     try {

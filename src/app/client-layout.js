@@ -33,8 +33,9 @@ export default function ClientLayout({children}) {
 
 
     return (
-        <AuthProvider>
+
             <SessionProvider>
+                <AuthProvider>
                 <AuthModalProvider>
                     <DataProvider>
                         {mounted && !hideHeaderFooter && <Header/>}
@@ -44,7 +45,8 @@ export default function ClientLayout({children}) {
                     <AuthModalWrapper/>
                     <Toaster position="top-center" reverseOrder={false}/>
                 </AuthModalProvider>
+                </AuthProvider>
             </SessionProvider>
-        </AuthProvider>
+
     );
 }

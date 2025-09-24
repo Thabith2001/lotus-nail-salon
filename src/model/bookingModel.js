@@ -1,22 +1,25 @@
 import mongoose from "mongoose";
 
-const BookingSchema = new mongoose.Schema({
-    serviceId: { type: String, required: true },
-    date: { type: String, required: true },
-    time: { type: String, required: true },
-    price: { type: Number, required: true },
-    duration: { type: String, required: true },
-    name: { type: String, required: true },
-    category: { type: String, required: true },
-    description: { type: String },
-    rating: { type: Number, default: 0 },
-    username: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
-    status: { type: String, default: "pending" },
-    bookingId:{type: String, required: true},
-    paymentStatus: { type: String, default: "pending" },
-    paymentMethod: { type: String, default: "credit_card" },
-}, { timestamps: true });
+const bookingSchema = new mongoose.Schema(
+    {
+        bookingId: { type: String, required: true, unique: true },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        userMembershipId: { type: mongoose.Schema.Types.ObjectId, ref: "UserMembership", default: null }, // optional
+        paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment", default: null },
+        customerName: { type: String, required: true },
+        email: { type: String, required: true },
+        phone: { type: String, required: true },
+        service: { type: String, ref: "Service", required: true },
+        bookingDate: { type: String, required: true },
+        time: { type: String, required: true }, // stored as "HH:mm"
+        paymentStatus: {
+            type: String,
+            enum: ["pending", "completed", "succeeded", "failed"],
+            default: "pending"
+        },
+        notes: { type: String },
+    },
+    { timestamps: true }
+);
 
-export default mongoose.models.Booking || mongoose.model("Booking", BookingSchema);
+export default mongoose.models.Booking || mongoose.model("Booking", bookingSchema);
