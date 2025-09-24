@@ -20,28 +20,7 @@ const About = () => {
         animateCounters();
     }, [animateCounters]);
 
-    useGsap({
-        ref: containerRef,
-        animation: (gsap) => {
-            const q = gsap.utils.selector(containerRef);
-            gsap.fromTo(
-                q(".fade-in"),
-                { opacity: 0, y: 50 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    stagger: 0.2,
-                    duration: 1,
-                    ease: "power4.out",
-                    scrollTrigger: {
-                        trigger: containerRef.current,
-                        start: "top 80%",
-                    },
-                }
-            );
-
-        },
-    });
+    useGsap(containerRef, ".fade-in");
 
     return (
         <section

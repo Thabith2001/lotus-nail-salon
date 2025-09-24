@@ -15,9 +15,9 @@ const ServiceSelection = () => {
                     <div
                         key={service.id}
                         onClick={() => setSelectedService(service)}
-                        className={`relative cursor-pointer group transition-all duration-300 ${
+                        className={`relative cursor-pointer rounded-2xl group transition-all duration-300 ${
                             selectedService?.id === service.id
-                                ? 'scale-105 ring-2 ring-pink-400'
+                                ? 'scale-105 ring-3 ring-pink-400'
                                 : 'hover:scale-102'
                         }`}
                     >
@@ -26,10 +26,10 @@ const ServiceSelection = () => {
                                 Popular
                             </div>
                         )}
-                        <div className={`bg-white/10 backdrop-blur-sm rounded-2xl border p-6 h-full transition-all duration-300 ${
+                        <div className={`bg-white/10 backdrop-blur-sm rounded-2xl  p-6 h-full transition-all duration-300 ${
                             selectedService?.id === service.id
-                                ? 'border-pink-400 bg-pink-500/10'
-                                : 'border-white/20 hover:border-white/40'
+                                ? 'ring-pink-400 bg-pink-500/10'
+                                : 'ring-white/20 hover:ring-white/40'
                         }`}>
                             <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
                                 selectedService?.id === service.id

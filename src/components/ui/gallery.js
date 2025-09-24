@@ -49,31 +49,7 @@ const Gallery = () => {
         setCurrentImageIndex(newIndex);
         setSelectedImage(filteredItems[newIndex]);
     };
-
-    // 🔥 Animate gallery sections with GSAP
-    useGsap({
-        ref: containerRef,
-        animation: (gsap) => {
-            const q = gsap.utils.selector(containerRef);
-
-            gsap.fromTo(
-                q(".fade-in"),
-                { opacity: 0, y: 50 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    stagger: 0.2,
-                    duration: 1,
-                    ease: "power4.out",
-                    scrollTrigger: {
-                        trigger: containerRef.current,
-                        start: "top 80%",
-                    },
-                }
-            );
-        },
-    });
-
+    useGsap(containerRef, ".fade-in");
     return (
         <section
             className="w-screen min-h-screen overflow-hidden relative py-20"
@@ -113,7 +89,7 @@ const Gallery = () => {
             </span>
                     </div>
 
-                    <h2 className="text-5xl md:text-7xl font-black leading-tight mb-8">
+                    <h2 className="text-5xl md:text-8xl  text-center font-black leading-tight mb-8">
             <span className="block bg-gradient-to-r from-white via-pink-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
               Artistry in
             </span>
@@ -122,7 +98,7 @@ const Gallery = () => {
             </span>
                     </h2>
 
-                    <p className="text-xl font-extralight text-white/70 max-w-3xl mx-auto leading-relaxed">
+                    <p className="text-xl font-extralight text-center text-white/70 max-w-3xl mx-auto leading-relaxed">
                         Discover our collection of exquisite nail artistry, where creativity
                         meets precision in every design
                     </p>

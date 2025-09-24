@@ -4,8 +4,9 @@ export const links = [
     {name: 'Services', href: '#services'},
     {name: 'Gallery', href: '#gallery'},
     {name: 'Pricing', href: '#pricing'},
-    {name: 'Contact', href: '#contact'},
-    {name: 'Blog', href: '#blog'}
+    {name: 'Blog', href: '#blog'},
+    {name: 'Contact', href: '#contact'}
+
 ];
 
 import {

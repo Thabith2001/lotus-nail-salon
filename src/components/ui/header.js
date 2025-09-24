@@ -22,11 +22,10 @@ const Header = () => {
     const pathname = usePathname();
     const dropdownRef = useRef(null);
 
-
+    // Scroll detection
     const handleScroll = useCallback(() => {
         setIsScrolled(window.scrollY > 10);
     }, []);
-
 
     const closeMenus = useCallback(() => {
         setIsMenuOpen(false);
@@ -44,7 +43,7 @@ const Header = () => {
         setIsMenuOpen(false);
     }, [openAuth]);
 
-
+    // Scroll to section (desktop + mobile)
     const handleScrollTo = useCallback(
         (id) => {
             if (pathname !== "/") {
@@ -56,8 +55,6 @@ const Header = () => {
             const element = document.getElementById(id);
             if (element) {
                 setIsMenuOpen(false);
-
-
                 setTimeout(() => {
                     element.scrollIntoView({ behavior: "smooth", block: "start" });
                     setActiveSection(id);
@@ -66,30 +63,30 @@ const Header = () => {
                     if (window.location.pathname + window.location.hash !== newUrl) {
                         window.history.replaceState(null, "", newUrl);
                     }
-                }, 300);
+                }, 200);
             }
         },
         [pathname, router]
     );
 
-
+    // Click outside dropdown
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setDropdownOpen(false);
             }
         };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        document.addEventListener("pointerdown", handleClickOutside);
+        return () => document.removeEventListener("pointerdown", handleClickOutside);
     }, []);
 
-
+    // Track active section with IntersectionObserver
     useEffect(() => {
         if (pathname !== "/") return;
 
         const sections = links
             .filter((link) => link.href.startsWith("#"))
-            .map((link) => document.querySelector(link.href))
+            .map((link) => document.getElementById(link.href.replace("#", "")))
             .filter(Boolean);
 
         if (!sections.length) return;
@@ -99,11 +96,8 @@ const Header = () => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         const sectionId = entry.target.id;
-                        setActiveSection((prev) =>
-                            prev !== sectionId ? sectionId : prev
-                        );
-                        const newUrl =
-                            sectionId === "home" ? "/" : `/#${sectionId}`;
+                        setActiveSection((prev) => (prev !== sectionId ? sectionId : prev));
+                        const newUrl = sectionId === "home" ? "/" : `/#${sectionId}`;
                         if (window.location.pathname + window.location.hash !== newUrl) {
                             window.history.replaceState(null, "", newUrl);
                         }
@@ -117,35 +111,23 @@ const Header = () => {
         return () => sections.forEach((section) => observer.unobserve(section));
     }, [pathname]);
 
-
+    // Scroll listener for header style
     useEffect(() => {
-        const handleDebouncedScroll = () => {
-            window.requestAnimationFrame(handleScroll);
-        };
-        window.addEventListener("scroll", handleDebouncedScroll, { passive: true });
-        return () =>
-            window.removeEventListener("scroll", handleDebouncedScroll);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
     }, [handleScroll]);
 
-
+    // Lock body scroll when mobile menu open
     useEffect(() => {
-        if (isMenuOpen) {
-            document.body.style.overflow = "hidden";
-            document.body.style.position = "fixed";
-            document.body.style.width = "100%";
-        } else {
-            document.body.style.overflow = "";
-            document.body.style.position = "";
-            document.body.style.width = "";
-        }
+        document.body.style.overflow = isMenuOpen ? "hidden" : "";
     }, [isMenuOpen]);
 
-
+    // Reset menu on route change
     useEffect(() => setIsMenuOpen(false), [pathname]);
 
-
+    // Scroll to hash on first load
     useEffect(() => {
-        if (pathname === "/") {
+        if (pathname === "/" && typeof window !== "undefined") {
             const hash = window.location.hash.replace("#", "");
             if (hash) {
                 const element = document.getElementById(hash);
@@ -210,8 +192,8 @@ const Header = () => {
                                 onClick={() => handleScrollTo(sectionId)}
                                 className={`text-md font-light transition-all duration-200 hover:scale-105 px-1 py-1 rounded-full ${
                                     isActive
-                                        ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 bg-white/20"
-                                        : "text-gray-200 hover:text-pink-400 hover:bg-white/10"
+                                        ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400"
+                                        : "text-gray-200 hover:text-pink-400"
                                 }`}
                                 aria-label={`Navigate to ${item.name}`}
                             >
@@ -229,7 +211,7 @@ const Header = () => {
                             <div className="relative">
                                 <Button
                                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                                    theme="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105 transition-all duration-200 shadow-lg"
+                                    theme="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105 shadow-lg"
                                     label={user.username || user.name || "Account"}
                                     aria-expanded={dropdownOpen}
                                     aria-haspopup="true"
@@ -238,17 +220,15 @@ const Header = () => {
                                     <div className="absolute right-0 mt-2 w-56 bg-white/95 backdrop-blur-lg shadow-2xl rounded-2xl py-2 z-50 border border-white/20 animate-in slide-in-from-top-2 duration-200">
                                         <Link
                                             href={user.role === "admin" ? "/admin" : "/appointment-details"}
-                                            className="block px-6 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors duration-150 font-medium"
+                                            className="block px-6 py-3 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 font-medium"
                                             onClick={closeMenus}
                                         >
-                                            {user.role === "admin"
-                                                ? "Admin Dashboard"
-                                                : "My Bookings"}
+                                            {user.role === "admin" ? "Admin Dashboard" : "My Bookings"}
                                         </Link>
                                         <hr className="border-gray-200 my-1" />
                                         <button
                                             onClick={logoutHandler}
-                                            className="w-full text-left px-6 py-3 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 font-medium"
+                                            className="w-full text-left px-6 py-3 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 font-medium"
                                         >
                                             Logout
                                         </button>
@@ -258,7 +238,7 @@ const Header = () => {
                         ) : (
                             <Button
                                 onClick={loginHandler}
-                                theme="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105 transition-all duration-200 shadow-lg"
+                                theme="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105 shadow-lg"
                                 label="Login"
                             />
                         )}
@@ -267,7 +247,7 @@ const Header = () => {
                     {/* Mobile Menu Toggle */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="lg:hidden p-2 rounded-xl text-pink-400 hover:bg-white/10 transition-colors duration-200 z-50"
+                        className="lg:hidden p-2 rounded-xl text-pink-400 hover:bg-white/10 z-50"
                         aria-label="Toggle mobile menu"
                         aria-expanded={isMenuOpen}
                     >
@@ -276,7 +256,7 @@ const Header = () => {
                 </div>
             </header>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile Overlay */}
             {isMenuOpen && (
                 <div
                     className="lg:hidden fixed inset-0 z-30 bg-black/50 backdrop-blur-sm"
@@ -287,12 +267,12 @@ const Header = () => {
 
             {/* Mobile Menu */}
             <div
-                className={`lg:hidden fixed inset-y-0 right-0 z-40 w-72 sm:w-80 max-w-full bg-gradient-to-br from-purple-950/95 to-pink-950/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out border-l border-white/20 ${
+                className={`lg:hidden fixed inset-y-0 right-0 z-40 w-72 sm:w-80 bg-gradient-to-br from-purple-950/95 to-pink-950/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 border-l border-white/20 ${
                     isMenuOpen ? "translate-x-0" : "translate-x-full"
                 }`}
             >
-                <div className="flex flex-col h-full overflow-y-auto max-h-[100vh]">
-                    {/* Top bar inside menu */}
+                <div className="flex flex-col h-full overflow-y-auto">
+                    {/* Top bar */}
                     <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
                         <div className="flex items-center space-x-2">
                             <Image
@@ -308,13 +288,13 @@ const Header = () => {
                         </div>
                         <button
                             onClick={closeMenus}
-                            className="p-2 rounded-lg text-pink-400 hover:bg-white/10 transition-colors duration-200"
+                            className="p-2 rounded-lg text-pink-400 hover:bg-white/10"
                         >
                             <X className="w-6 h-6" />
                         </button>
                     </div>
 
-                    {/* Navigation Links */}
+                    {/* Nav Links */}
                     <nav className="flex-1 px-4 py-6 space-y-3">
                         {links.map((item, index) => {
                             const sectionId = item.href.replace("#", "");
@@ -323,10 +303,10 @@ const Header = () => {
                                 <button
                                     key={index}
                                     onClick={() => handleScrollTo(sectionId)}
-                                    className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 ${
+                                    className={`w-full text-left px-3 py-2 rounded-lg transition-all ${
                                         isActive
-                                            ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 font-semibold bg-white/20"
-                                            : "text-gray-200 hover:text-pink-400 hover:bg-white/10"
+                                            ? "text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 font-semibold"
+                                            : "text-gray-200 hover:text-pink-400"
                                     }`}
                                 >
                                     {item.name}
@@ -354,21 +334,21 @@ const Header = () => {
                                     className="block w-full"
                                 >
                                     <Button
-                                        theme="w-full px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105 transition-transform duration-200"
+                                        theme="w-full px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105"
                                         label={user.role === "admin" ? "Dashboard" : "My Bookings"}
                                     />
                                 </Link>
 
                                 <Button
                                     onClick={logoutHandler}
-                                    theme="w-full px-6 py-3 rounded-xl font-semibold text-red-400 bg-transparent border-2 border-red-400 hover:bg-red-400 hover:text-white transition-all duration-200"
+                                    theme="w-full px-6 py-3 rounded-xl font-semibold text-red-400 border-2 border-red-400 hover:bg-red-400 hover:text-white"
                                     label="Logout"
                                 />
                             </>
                         ) : (
                             <Button
                                 onClick={loginHandler}
-                                theme="w-full px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105 transition-transform duration-200"
+                                theme="w-full px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:scale-105"
                                 label="Login / Sign Up"
                             />
                         )}

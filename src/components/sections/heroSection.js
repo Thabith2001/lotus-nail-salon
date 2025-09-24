@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import {ArrowRight, Calendar, ChevronRight, Sparkles} from "lucide-react";
 import Button from "@/components/buttons/buttons";
 import { useGsap } from "@/hooks/useGsap";
 import { useAuth } from "@/context/contextAuth";
@@ -70,33 +70,27 @@ const Hero = () => {
 
             {/* CTA */}
             <div className="fade-in flex flex-col sm:flex-row justify-center items-center gap-6">
-                <Button
-                    onClick={user ? () => router.push("/booking") : openAuth}
-                    label={
-                        <span className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              Book Your Appointment
-              <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </span>
-                    }
-                    theme="group relative px-10 py-4 bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold rounded-full
-          overflow-hidden shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 hover:scale-105"
+                <Button theme="group px-10 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 hover:scale-105"
+                            label={<span className="flex items-center gap-2">
+                                <Calendar className="w-5 h-5" />
+                                Book Appointment
+                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                            </span>}
+                        onClick={user ? () => router.push("/booking") : openAuth}
                 />
 
-                <Button
-                    onClick={() => {
-                        router.push("/#gallery");
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    label={
-                        <span className="flex items-center gap-2">
-              View Gallery
-              <ArrowRight className="w-5 h-5 " />
-            </span>
-                    }
-                    theme="group px-10 py-4 bg-white/10 backdrop-blur-lg border border-white/30 text-white font-bold rounded-full hover:bg-white/20
-          transition-all duration-300 hover:scale-105 hover:border-pink-300/50"
+                <Button theme="group px-10 py-4 bg-white/10 backdrop-blur-lg border border-white/20 text-white font-bold rounded-full hover:bg-white/20 transition-all duration-300 hover:scale-105"
+                        label={<span className="flex items-center gap-2">
+                                <Sparkles className="w-5 h-5" />
+                                View Gallery
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                            </span>}
+                        onClick={() => {
+                            router.push("/#gallery");
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
                 />
+
             </div>
 
             {/* Social proof */}

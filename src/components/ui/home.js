@@ -1,13 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, {useRef} from "react";
 import Image from "next/image";
 import { useSparkles } from "@/hooks/useSparkles";
 import Hero from "@/components/sections/heroSection";
-import {useAuth} from "@/context/contextAuth";
+import {useGsap} from "@/hooks/useGsap";
 
 const Home = () => {
     const sparkles = useSparkles(25);
-
+    const containerRef = useRef(null);
+    useGsap(containerRef, ".fade-up");
     return (
         <section className="relative col-span-12 h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-pink-900 overflow-hidden">
             {/* Background Layer */}
