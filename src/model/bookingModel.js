@@ -1,34 +1,22 @@
 import mongoose from "mongoose";
 
-const bookingSchema = new mongoose.Schema(
-    {
-        service: {
-            id: { type: String, required: true },
-            name: { type: String, required: true },
-            price: { type: Number, required: true },
-            duration: { type: Number, required: true },
-            category: { type: String },
-        },
-        date: { type: Date, required: true },
-        time: { type: String, required: true },
-        specialist: {
-            id: { type: String, required: true },
-            name: { type: String, required: true },
-            specialty: { type: String },
-        },
-        customer: {
-            name: { type: String, required: true },
-            email: { type: String, required: true },
-            phone: { type: String, required: true },
-            notes: { type: String },
-        },
-        status: {
-            type: String,
-            enum: ["pending", "confirmed", "completed", "canceled"],
-            default: "pending",
-        },
-    },
-    { timestamps: true }
-);
+const BookingSchema = new mongoose.Schema({
+    serviceId: { type: String, required: true },
+    date: { type: String, required: true },
+    time: { type: String, required: true },
+    price: { type: Number, required: true },
+    duration: { type: String, required: true },
+    name: { type: String, required: true },
+    category: { type: String, required: true },
+    description: { type: String },
+    rating: { type: Number, default: 0 },
+    username: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    status: { type: String, default: "pending" },
+    bookingId:{type: String, required: true},
+    paymentStatus: { type: String, default: "pending" },
+    paymentMethod: { type: String, default: "credit_card" },
+}, { timestamps: true });
 
-export default mongoose.models.Booking || mongoose.model("Booking", bookingSchema);
+export default mongoose.models.Booking || mongoose.model("Booking", BookingSchema);

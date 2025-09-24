@@ -4,6 +4,7 @@ import {Check} from "lucide-react";
 import {servicesContext} from "@/app/booking/page";
 
 const ServiceSelection = () => {
+
     const {setSelectedService,selectedService,getServiceIcon}=useContext(servicesContext);
 
 

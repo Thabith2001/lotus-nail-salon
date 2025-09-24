@@ -1,6 +1,11 @@
 import React, { useContext } from 'react';
 import { CreditCard, Shield, User } from "lucide-react";
 import { servicesContext } from "@/app/booking/page";
+import convertToSubCurrency from "@/lib/convertToSubCurrency";
+import CheckOut from "@/components/ui/checkOut";
+import {Elements} from "@stripe/react-stripe-js";
+import {paymentContext, stripePromise} from "@/app/billing/[...slug]/page";
+import toast from "react-hot-toast";
 
 const PaymentInformation = () => {
     const { selectedService, selectedTime, selectedDate, paymentInfo, setPaymentInfo } = useContext(servicesContext);
@@ -59,61 +64,48 @@ const PaymentInformation = () => {
 
             {/* Payment Form */}
             <div className="max-w-2xl mx-auto space-y-6">
-                <div>
-                    <label className="block text-white/80 text-sm font-medium mb-2">
-                        <CreditCard className="w-4 h-4 inline mr-2" />
-                        Card Number *
-                    </label>
-                    <input
-                        type="text"
-                        value={paymentInfo.cardNumber}
-                        onChange={(e) => setPaymentInfo({ ...paymentInfo, cardNumber: e.target.value })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
-                        placeholder="1234 5678 9012 3456"
-                        maxLength="19"
-                    />
-                </div>
+                <Elements
+                    stripe={stripePromise}
+                    options={{
+                        mode: "payment",
+                        amount: convertToSubCurrency(selectedService.price ?? 0),
+                        currency: "usd",
+                        appearance: {
+                            theme: "night",
+                            variables: {
+                                colorPrimary: "#ec4899",
+                                colorBackground: "rgba(255, 255, 255, 0.05)",
+                                colorText: "#ffffff",
+                                colorDanger: "#ef4444",
+                                fontFamily: "Inter, system-ui, sans-serif",
+                                spacingUnit: "4px",
+                                borderRadius: "12px",
+                            },
+                        },
+                    }}
+                >
+                    <paymentContext.Provider value={selectedService}>
+                        <CheckOut
 
-                <div className="grid grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-white/80 text-sm font-medium mb-2">Expiry Date *</label>
-                        <input
-                            type="text"
-                            value={paymentInfo.expiryDate}
-                            onChange={(e) => setPaymentInfo({ ...paymentInfo, expiryDate: e.target.value })}
-                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
-                            placeholder="MM/YY"
-                            maxLength="5"
+                            onPaymentResult={(status, data) => {
+                                if (status ==="success") {
+                                    setPaymentInfo(data)
+                                }else{
+                                    toast.error("Payment Failed"
+                                    ,{
+                                        duration: 5000,
+                                        position: "top-center",
+                                        style: {
+                                            background: "#333",
+                                            color: "#fff",
+                                        },
+                                    })
+                                }
+                            }}
                         />
-                    </div>
+                    </paymentContext.Provider>
 
-                    <div>
-                        <label className="block text-white/80 text-sm font-medium mb-2">CVV *</label>
-                        <input
-                            type="password"
-                            value={paymentInfo.cvv}
-                            onChange={(e) => setPaymentInfo({ ...paymentInfo, cvv: e.target.value })}
-                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
-                            placeholder="123"
-                            maxLength="4"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-white/80 text-sm font-medium mb-2">
-                        <User className="w-4 h-4 inline mr-2" />
-                        Cardholder Name *
-                    </label>
-                    <input
-                        type="text"
-                        value={paymentInfo.cardName}
-                        onChange={(e) => setPaymentInfo({ ...paymentInfo, cardName: e.target.value })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all"
-                        placeholder="Name as it appears on card"
-                    />
-                </div>
-
+                </Elements>
                 <div className="flex items-center space-x-3 p-4 bg-blue-500/10 rounded-xl border border-blue-400/20">
                     <Shield className="w-6 h-6 text-blue-400" />
                     <p className="text-blue-200 text-sm">

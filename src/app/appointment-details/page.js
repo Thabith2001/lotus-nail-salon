@@ -1,539 +1,576 @@
-"use client";
 
-import React, { useState, useEffect } from 'react';
+"use client";
+import React, { useState, useEffect } from "react";
 import {
-    ArrowLeft,
     Calendar,
     Clock,
-    MapPin,
-    User,
-    Phone,
-    Mail,
+    Star,
     CreditCard,
     CheckCircle,
     AlertCircle,
-    X,
-    Edit,
+    XCircle,
+    Eye,
     Download,
-    Share2,
-    Heart,
+    Filter,
+    Search,
+    ChevronDown,
     Sparkles,
-    Gift,
     Crown,
+    Gift,
     Brush,
+    Heart,
     Palette,
-    Shield,
-    MessageCircle
-} from 'lucide-react';
-import {useRouter} from "next/navigation";
-import {useSparkles} from "@/hooks/useSparkles";
+    Receipt,
+    Repeat,
+    Plus,
+} from "lucide-react";
+import { useSparkles } from "@/hooks/useSparkles";
 
-const BookingDetails = () => {
-    const router = useRouter();
-    const [booking, setBooking] = useState(null);
-    const [loading, setLoading] = useState(true);
+const BookingHistory = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [error, setError] = useState(null);
-    const [showCancelModal, setShowCancelModal] = useState(false);
-    const sparkles = useSparkles(25);
+    const [activeTab, setActiveTab] = useState("all");
+    const [filterStatus, setFilterStatus] = useState("all");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showFilters, setShowFilters] = useState(false);
 
+    const sparkles = useSparkles(20);
+
+    const bookingHistory = [
+        {
+            id: "LSP-2024-001234",
+            type: "booking",
+            service: {
+                name: "Luxury Gel Manicure",
+                category: "manicure",
+                duration: 60,
+            },
+            date: "2024-03-25",
+            time: "14:30",
+            status: "completed",
+            amount: 65,
+            paymentMethod: "Credit Card",
+            rating: 5,
+            review: "Amazing service! The nail art was exactly what I wanted.",
+            canRebook: true,
+            canReview: false,
+        },
+        {
+            id: "LSP-2024-001235",
+            type: "booking",
+            service: {
+                name: "Custom Nail Art",
+                category: "nail-art",
+                duration: 90,
+            },
+            date: "2024-04-15",
+            time: "10:00",
+            status: "upcoming",
+            amount: 85,
+            paymentMethod: "Credit Card",
+            canRebook: false,
+            canReview: false,
+            canCancel: true,
+        },
+        {
+            id: "LSP-MEM-2024-001",
+            type: "membership",
+            plan: {
+                name: "Silver Membership",
+                tier: "silver",
+                duration: "Monthly",
+            },
+            purchaseDate: "2024-03-01",
+            expiryDate: "2024-04-01",
+            status: "active",
+            amount: 149,
+            paymentMethod: "Credit Card",
+            servicesUsed: 2,
+            servicesTotal: 3,
+            autoRenewal: true,
+        },
+        {
+            id: "LSP-2024-001236",
+            type: "booking",
+            service: {
+                name: "Classic Pedicure",
+                category: "pedicure",
+                duration: 45,
+            },
+            date: "2024-02-20",
+            time: "16:00",
+            status: "cancelled",
+            amount: 55,
+            paymentMethod: "Credit Card",
+            refundAmount: 55,
+            canRebook: true,
+            canReview: false,
+        },
+    ];
+
+    const filteredHistory = bookingHistory.filter((item) => {
+        const matchesTab =
+            activeTab === "all" ||
+            (activeTab === "bookings" && item.type === "booking") ||
+            (activeTab === "memberships" && item.type === "membership");
+
+        const matchesStatus = filterStatus === "all" || item.status === filterStatus;
+
+        const matchesSearch =
+            searchTerm === "" ||
+            (item.type === "booking" &&
+                item.service.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (item.type === "membership" &&
+                item.plan.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        return matchesTab && matchesStatus && matchesSearch;
+    });
 
     useEffect(() => {
-        const fetchBooking = async () => {
-            try {
-                setLoading(true);
-                // Simulate API call
-                setTimeout(() => {
-                    const sampleBooking = {
-                        id: "LSP-2024-001234",
-                        service: {
-                            name: "Luxury Gel Manicure",
-                            category: "manicure",
-                            duration: 60,
-                            price: 65,
-                            description: "Premium gel manicure with custom color selection and nail art"
-                        },
-                        customer: {
-                            name: "Sarah Johnson",
-                            email: "sarah.johnson@email.com",
-                            phone: "(555) 123-4567"
-                        },
-                        appointment: {
-                            date: "2024-03-25",
-                            time: "14:30",
-                            status: "confirmed"
-                        },
-                        payment: {
-                            amount: 65,
-                            method: "Credit Card",
-                            status: "paid",
-                            transactionId: "txn_1234567890"
-                        },
-                        spa: {
-                            name: "Lotus Spa",
-                            address: "123 Beauty Lane, Spa District, Luxury City, LC 12345",
-                            phone: "(555) 123-NAILS",
-                            email: "bookings@lotusspa.com"
-                        },
-                        notes: "Customer requested pink and gold nail art design. Allergic to certain acrylics.",
-                        createdAt: "2024-03-15T10:30:00Z",
-                        updatedAt: "2024-03-15T10:30:00Z"
-                    };
-                    setBooking(sampleBooking);
-                    setLoading(false);
-                    setTimeout(() => setIsVisible(true), 100);
-                }, 1000);
-            } catch (err) {
-                setError("Failed to load bookings details");
-                setLoading(false);
-            }
-        };
-
-        fetchBooking();
+        setIsVisible(true);
     }, []);
-
-    const getServiceIcon = (category) => {
-        switch (category) {
-            case 'manicure': return <Brush className="w-6 h-6 text-white" />;
-            case 'pedicure': return <Heart className="w-6 h-6 text-white" />;
-            case 'nail-art': return <Palette className="w-6 h-6 text-white" />;
-            case 'package': return <Gift className="w-6 h-6 text-white" />;
-            case 'membership': return <Crown className="w-6 h-6 text-white" />;
-            default: return <Sparkles className="w-6 h-6 text-white" />;
-        }
-    };
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'confirmed': return 'from-green-400 to-emerald-500';
-            case 'pending': return 'from-yellow-400 to-orange-500';
-            case 'cancelled': return 'from-red-400 to-red-500';
-            case 'completed': return 'from-blue-400 to-blue-500';
-            default: return 'from-gray-400 to-gray-500';
+            case "completed":
+                return "from-green-400 to-emerald-500";
+            case "upcoming":
+                return "from-blue-400 to-cyan-500";
+            case "cancelled":
+                return "from-red-400 to-pink-500";
+            case "active":
+                return "from-green-400 to-emerald-500";
+            case "expired":
+                return "from-gray-400 to-gray-500";
+            default:
+                return "from-purple-400 to-pink-500";
         }
     };
 
-    const getStatusText = (status) => {
+    const getStatusIcon = (status) => {
         switch (status) {
-            case 'confirmed': return 'Confirmed';
-            case 'pending': return 'Pending';
-            case 'cancelled': return 'Cancelled';
-            case 'completed': return 'Completed';
-            default: return 'Unknown';
+            case "completed":
+                return <CheckCircle className="w-5 h-5" />;
+            case "upcoming":
+                return <Clock className="w-5 h-5" />;
+            case "cancelled":
+                return <XCircle className="w-5 h-5" />;
+            case "active":
+                return <CheckCircle className="w-5 h-5" />;
+            case "expired":
+                return <AlertCircle className="w-5 h-5" />;
+            default:
+                return <Clock className="w-5 h-5" />;
+        }
+    };
+
+    const getServiceIcon = (category) => {
+        switch (category) {
+            case "manicure":
+                return <Brush className="w-5 h-5 text-pink-400" />;
+            case "pedicure":
+                return <Heart className="w-5 h-5 text-pink-400" />;
+            case "nail-art":
+                return <Palette className="w-5 h-5 text-pink-400" />;
+            default:
+                return <Sparkles className="w-5 h-5 text-pink-400" />;
+        }
+    };
+
+    const getMembershipIcon = (tier) => {
+        switch (tier) {
+            case "gold":
+                return <Crown className="w-5 h-5 text-yellow-400" />;
+            case "silver":
+                return <Star className="w-5 h-5 text-gray-300" />;
+            case "bronze":
+                return <Gift className="w-5 h-5 text-orange-400" />;
+            default:
+                return <Crown className="w-5 h-5 text-pink-400" />;
         }
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+        return new Date(dateString).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
         });
     };
 
     const formatTime = (timeString) => {
-        return new Date(`2024-01-01T${timeString}`).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
+        return new Date(`2024-01-01T${timeString}`).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
         });
     };
 
-    const handleCancelBooking = () => {
-        setShowCancelModal(false);
-        // Simulate cancellation
-        setBooking(prev => ({
-            ...prev,
-            appointment: {
-                ...prev.appointment,
-                status: 'cancelled'
-            }
-        }));
-    };
-
-    const handleReschedule = () => {
-        console.log("Reschedule bookings");
-        // Add reschedule logic here
-    };
-
-    const handleDownload = () => {
-        console.log("Download bookings confirmation");
-        // Add download logic here
-    };
-
-    const handleShare = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Booking Confirmation',
-                text: `Booking ${booking.id} at ${booking.spa.name}`,
-                url: window.location.href
-            });
-        } else {
-            navigator.clipboard.writeText(window.location.href);
-            alert('Booking link copied to clipboard!');
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-pink-900 relative overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden">
-                    {sparkles.map((_, i) => (
-                        <div
-                            key={i}
-                            className="absolute w-1 h-1 bg-pink-300 rounded-full opacity-30 animate-pulse"
-                            style={{
-                                left: `${Math.random() * 100}%`,
-                                top: `${Math.random() * 100}%`,
-                                animationDelay: `${Math.random() * 3}s`,
-                                animationDuration: `${2 + Math.random() * 2}s`
-                            }}
-                        />
-                    ))}
-                </div>
-                <div className="relative z-10 flex h-screen items-center justify-center">
-                    <div className="text-center">
-                        <div className="w-16 h-16 border-4 border-pink-400/30 border-t-pink-400 rounded-full animate-spin mx-auto mb-4"></div>
-                        <p className="text-white/80 text-lg">Loading booking details...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error || !booking) {
-        return (
-            <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-pink-900 flex items-center justify-center p-6">
-                <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8 text-center max-w-md">
-                    <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-white mb-4">Booking Not Found</h2>
-                    <p className="text-white/70 mb-6">{error || "The bookings you're looking for doesn't exist or has been removed."}</p>
-                    <button
-                        onClick={() => window.history.back()}
-                        className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-full hover:scale-105 transition-transform"
-                    >
-                        Go Back
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-pink-900 relative overflow-hidden">
+        <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-pink-900 relative overflow-hidden py-12">
             {/* Background Effects */}
             <div className="absolute inset-0 overflow-hidden">
                 {sparkles.map((_, i) => (
                     <div
                         key={i}
-                        className="absolute w-1 h-1 bg-pink-300 rounded-full opacity-30 animate-pulse"
+                        className="absolute w-1 h-1 bg-pink-300 rounded-full opacity-30 animate-twinkle"
                         style={{
                             left: `${Math.random() * 100}%`,
                             top: `${Math.random() * 100}%`,
                             animationDelay: `${Math.random() * 3}s`,
-                            animationDuration: `${2 + Math.random() * 2}s`
+                            animationDuration: `${2 + Math.random() * 2}s`,
                         }}
                     />
                 ))}
+
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
 
-            {/* Main Content */}
-            <div className={`relative z-10 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className="relative z-10 max-w-7xl mx-auto px-6">
                 {/* Header */}
-                <div className="sticky top-0 z-20 bg-black/20 backdrop-blur-xl border-b border-white/10">
-                    <div className="max-w-4xl mx-auto px-6 py-4">
-                        <div className="flex items-center justify-between">
-                            <button
-                                onClick={() => router.back()}
-                                className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors group"
-                            >
-                                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                                <span>Back</span>
-                            </button>
-                            <div className="flex items-center space-x-3">
-                                <button
-                                    onClick={handleShare}
-                                    className="p-2 bg-white/10 backdrop-blur-sm rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-all"
-                                >
-                                    <Share2 className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={handleDownload}
-                                    className="p-2 bg-white/10 backdrop-blur-sm rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-all"
-                                >
-                                    <Download className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
+                <div
+                    className={`text-center mb-12 transition-all duration-1000 ${
+                        isVisible
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-10"
+                    }`}
+                >
+                    <div className="inline-flex items-center px-6 py-2 mb-8 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full">
+                        <Receipt className="w-4 h-4 text-pink-400 mr-3" />
+                        <span className="text-sm font-medium text-white/90 tracking-wide">
+              BOOKING HISTORY
+            </span>
                     </div>
+
+                    <h1 className="text-4xl md:text-6xl font-black leading-tight mb-4">
+            <span className="bg-gradient-to-r from-white via-pink-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
+              Your Beauty
+            </span>
+                        <br />
+                        <span className="bg-gradient-to-r from-pink-300 via-rose-200 to-white bg-clip-text text-transparent drop-shadow-2xl">
+              Journey
+            </span>
+                    </h1>
+
+                    <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                        Track your appointments, memberships, and spa experiences
+                    </p>
                 </div>
 
-                <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
-                    {/* Booking Header */}
-                    <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+                {/* Tabs and Filters */}
+                <div
+                    className={`mb-8 transition-all duration-1000 delay-200 ${
+                        isVisible
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-10"
+                    }`}
+                >
+                    {/* Tab Navigation */}
+                    <div className="flex flex-wrap justify-center gap-4 mb-6">
+                        {[
+                            { id: "all", name: "All History", icon: Receipt },
+                            { id: "bookings", name: "Appointments", icon: Calendar },
+                            { id: "memberships", name: "Memberships", icon: Crown },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex items-center space-x-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 ${
+                                    activeTab === tab.id
+                                        ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/25"
+                                        : "bg-white/10 backdrop-blur-lg border border-white/20 text-white/80 hover:bg-white/20"
+                                }`}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                <span>{tab.name}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Search and Filters */}
+                    <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                        {/* Search */}
+                        <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
+                            <input
+                                type="text"
+                                placeholder="Search appointments or memberships..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full text-white placeholder-white/50 focus:outline-none focus:border-pink-300/50 transition-colors duration-300"
+                            />
+                        </div>
+
+                        {/* Filter Dropdown */}
                         <div className="relative">
-                            <div className={`absolute inset-0 bg-gradient-to-r ${getStatusColor(booking.appointment.status)} opacity-10`}></div>
-                            <div className="relative p-8">
-                                <div className="flex items-start justify-between mb-6">
-                                    <div>
-                                        <h1 className="text-3xl font-bold text-white mb-2">{booking.service.name}</h1>
-                                        <p className="text-white/70 text-lg">{booking.service.description}</p>
-                                    </div>
-                                    <div className={`flex items-center space-x-2 px-4 py-2 bg-gradient-to-r ${getStatusColor(booking.appointment.status)} rounded-full`}>
-                                        <CheckCircle className="w-5 h-5 text-white" />
-                                        <span className="text-white font-semibold">{getStatusText(booking.appointment.status)}</span>
-                                    </div>
-                                </div>
-
-                                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center space-x-3">
-                                            <div className={`p-3 bg-gradient-to-r ${getStatusColor(booking.appointment.status)} rounded-full`}>
-                                                {getServiceIcon(booking.service.category)}
-                                            </div>
-                                            <div>
-                                                <p className="text-white/60 text-sm">Service Category</p>
-                                                <p className="text-white font-semibold capitalize">{booking.service.category.replace('-', ' ')}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center space-x-3">
-                                            <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-                                                <Clock className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="text-white/60 text-sm">Duration</p>
-                                                <p className="text-white font-semibold">{booking.service.duration} minutes</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full">
-                                                <CreditCard className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="text-white/60 text-sm">Total Amount</p>
-                                                <p className="text-white font-bold text-xl">${booking.payment.amount}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center space-x-3">
-                                            <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full">
-                                                <Shield className="w-6 h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="text-white/60 text-sm">Booking ID</p>
-                                                <p className="text-white font-mono text-sm">{booking.id}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Appointment Details */}
-                    <div className="grid lg:grid-cols-2 gap-8">
-                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
-                            <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                                <Calendar className="w-6 h-6 text-pink-400" />
-                                <span>Appointment Details</span>
-                            </h2>
-
-                            <div className="space-y-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full">
-                                        <Calendar className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/60 text-sm">Date</p>
-                                        <p className="text-white font-semibold text-lg">{formatDate(booking.appointment.date)}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full">
-                                        <Clock className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/60 text-sm">Time</p>
-                                        <p className="text-white font-semibold text-lg">{formatTime(booking.appointment.time)}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start space-x-4">
-                                    <div className="p-3 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full">
-                                        <MapPin className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/60 text-sm">Location</p>
-                                        <p className="text-white font-semibold">{booking.spa.name}</p>
-                                        <p className="text-white/70 text-sm">{booking.spa.address}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Customer & Contact Info */}
-                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
-                            <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                                <User className="w-6 h-6 text-blue-400" />
-                                <span>Contact Information</span>
-                            </h2>
-
-                            <div className="space-y-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-gradient-to-r from-green-500 to-teal-600 rounded-full">
-                                        <User className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/60 text-sm">Customer</p>
-                                        <p className="text-white font-semibold text-lg">{booking.customer.name}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-gradient-to-r from-orange-500 to-red-600 rounded-full">
-                                        <Mail className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/60 text-sm">Email</p>
-                                        <p className="text-white font-semibold">{booking.customer.email}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full">
-                                        <Phone className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/60 text-sm">Phone</p>
-                                        <p className="text-white font-semibold">{booking.customer.phone}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full">
-                                        <MessageCircle className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/60 text-sm">Spa Contact</p>
-                                        <p className="text-white font-semibold">{booking.spa.phone}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Payment Information */}
-                    <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
-                        <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                            <CreditCard className="w-6 h-6 text-green-400" />
-                            <span>Payment Information</span>
-                        </h2>
-
-                        <div className="grid md:grid-cols-3 gap-6">
-                            <div className="flex items-center space-x-4">
-                                <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full">
-                                    <CreditCard className="w-6 h-6 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-white/60 text-sm">Payment Method</p>
-                                    <p className="text-white font-semibold">{booking.payment.method}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center space-x-4">
-                                <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full">
-                                    <CheckCircle className="w-6 h-6 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-white/60 text-sm">Payment Status</p>
-                                    <p className="text-green-400 font-semibold capitalize">{booking.payment.status}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center space-x-4">
-                                <div className="p-3 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full">
-                                    <Shield className="w-6 h-6 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-white/60 text-sm">Transaction ID</p>
-                                    <p className="text-white font-mono text-sm">{booking.payment.transactionId}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Special Notes */}
-                    {booking.notes && (
-                        <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl p-8">
-                            <h2 className="text-2xl font-bold text-white mb-4 flex items-center space-x-2">
-                                <MessageCircle className="w-6 h-6 text-yellow-400" />
-                                <span>Special Notes</span>
-                            </h2>
-                            <p className="text-white/80 leading-relaxed bg-white/5 p-4 rounded-xl border border-white/10">
-                                {booking.notes}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    {booking.appointment.status === 'confirmed' && (
-                        <div className="flex flex-wrap gap-4 justify-center">
                             <button
-                                onClick={handleReschedule}
-                                className="flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold rounded-full hover:scale-105 transition-all shadow-lg"
+                                onClick={() => setShowFilters(!showFilters)}
+                                className="flex items-center space-x-2 px-6 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full text-white hover:bg-white/20 transition-colors duration-300"
                             >
-                                <Edit className="w-5 h-5" />
-                                <span>Reschedule</span>
+                                <Filter className="w-4 h-4" />
+                                <span>Status</span>
+                                <ChevronDown
+                                    className={`w-4 h-4 transition-transform duration-300 ${
+                                        showFilters ? "rotate-180" : ""
+                                    }`}
+                                />
                             </button>
 
-                            <button
-                                onClick={() => setShowCancelModal(true)}
-                                className="flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-red-500 to-pink-600 text-white font-semibold rounded-full hover:scale-105 transition-all shadow-lg"
-                            >
-                                <X className="w-5 h-5" />
-                                <span>Cancel Booking</span>
+                            {showFilters && (
+                                <div
+                                    className="absolute top-full mt-2 right-0 bg-white/10 backdrop-blur-xl
+                  border border-white/20 rounded-xl shadow-2xl p-2 min-w-48
+                  z-[9999]"
+                                >
+                                    {["all", "completed", "upcoming", "cancelled", "active"].map(
+                                        (status) => (
+                                            <button
+                                                key={status}
+                                                onClick={() => {
+                                                    setFilterStatus(status);
+                                                    setShowFilters(false);
+                                                }}
+                                                className={`w-full text-left px-4 py-2 rounded-lg transition-colors duration-200 ${
+                                                    filterStatus === status
+                                                        ? "bg-pink-500/20 text-pink-300"
+                                                        : "text-white/80 hover:bg-white/10"
+                                                }`}
+                                            >
+                                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                                            </button>
+                                        )
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* History Items */}
+                <div className={`space-y-6 transition-all duration-1000 delay-400 z-20 ${
+                    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}>
+                    {filteredHistory.length === 0 ? (
+                        <div className="text-center py-16">
+                            <div className="w-24 h-24 bg-white/5 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Receipt className="w-12 h-12 text-white/30" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">No history found</h3>
+                            <p className="text-white/60 mb-6">Try adjusting your filters or search terms</p>
+                            <button className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-full hover:scale-105 transition-transform duration-300">
+                                Book New Appointment
                             </button>
                         </div>
+                    ) : (
+                        filteredHistory.map((item, index) => (
+                            <div
+                                key={item.id}
+                                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300"
+                            >
+                                {item.type === 'booking' ? (
+                                    /* Booking Item */
+                                    <div className="p-6">
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                                            <div className="flex items-center space-x-4 mb-4 md:mb-0">
+                                                <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-purple-500 rounded-xl flex items-center justify-center">
+                                                    {getServiceIcon(item.service.category)}
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-white">{item.service.name}</h3>
+                                                    <p className="text-white/60 text-sm">Booking ID: {item.id}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className={`inline-flex items-center space-x-2 px-3 py-1 bg-gradient-to-r ${getStatusColor(item.status)} rounded-full text-white text-sm font-medium`}>
+                                                {getStatusIcon(item.status)}
+                                                <span>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-4 gap-4 mb-6">
+                                            <div className="flex items-center space-x-3">
+                                                <Calendar className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Date</p>
+                                                    <p className="text-white font-medium">{formatDate(item.date)}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3">
+                                                <Clock className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Time</p>
+                                                    <p className="text-white font-medium">{formatTime(item.time)}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3">
+                                                <CreditCard className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Amount</p>
+                                                    <p className="text-white font-medium">${item.amount}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3">
+                                                <Clock className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Duration</p>
+                                                    <p className="text-white font-medium">{item.service.duration} min</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {item.rating && (
+                                            <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                                                <div className="flex items-center space-x-2 mb-2">
+                                                    <span className="text-white/80 text-sm">Your Rating:</span>
+                                                    <div className="flex space-x-1">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <Star
+                                                                key={i}
+                                                                className={`w-4 h-4 ${i < item.rating ? 'text-yellow-400 fill-current' : 'text-white/30'}`}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                {item.review && (
+                                                    <p className="text-white/70 text-sm italic">&#34;{item.review}&#34;</p>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        <div className="flex flex-wrap gap-3">
+                                            <button className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/80 hover:bg-white/20 transition-colors duration-300">
+                                                <Eye className="w-4 h-4" />
+                                                <span>View Details</span>
+                                            </button>
+
+                                            <button className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/80 hover:bg-white/20 transition-colors duration-300">
+                                                <Download className="w-4 h-4" />
+                                                <span>Receipt</span>
+                                            </button>
+
+                                            {item.canRebook && (
+                                                <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full hover:scale-105 transition-transform duration-300">
+                                                    <Repeat className="w-4 h-4" />
+                                                    <span>Book Again</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Membership Item */
+                                    <div className="p-6">
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                                            <div className="flex items-center space-x-4 mb-4 md:mb-0">
+                                                <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">
+                                                    {getMembershipIcon(item.plan.tier)}
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-white">{item.plan.name}</h3>
+                                                    <p className="text-white/60 text-sm">Membership ID: {item.id}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className={`inline-flex items-center space-x-2 px-3 py-1 bg-gradient-to-r ${getStatusColor(item.status)} rounded-full text-white text-sm font-medium`}>
+                                                {getStatusIcon(item.status)}
+                                                <span>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-4 gap-4 mb-6">
+                                            <div className="flex items-center space-x-3">
+                                                <Calendar className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Start Date</p>
+                                                    <p className="text-white font-medium">{formatDate(item.purchaseDate)}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3">
+                                                <Clock className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Expires</p>
+                                                    <p className="text-white font-medium">{formatDate(item.expiryDate)}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3">
+                                                <CreditCard className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Monthly Fee</p>
+                                                    <p className="text-white font-medium">${item.amount}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3">
+                                                <Star className="w-4 h-4 text-pink-400" />
+                                                <div>
+                                                    <p className="text-white/80 text-sm">Services Used</p>
+                                                    <p className="text-white font-medium">{item.servicesUsed}/{item.servicesTotal}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {item.status === 'active' && (
+                                            <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-300/20">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-green-300 font-semibold text-sm">Membership Active</p>
+                                                        <p className="text-white/70 text-sm">
+                                                            {item.autoRenewal ? 'Auto-renewal enabled' : 'Manual renewal required'}
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-green-300 text-sm">Services Remaining</p>
+                                                        <p className="text-white font-bold">{item.servicesTotal - item.servicesUsed}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="flex flex-wrap gap-3">
+                                            <button className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/80 hover:bg-white/20 transition-colors duration-300">
+                                                <Eye className="w-4 h-4" />
+                                                <span>View Details</span>
+                                            </button>
+
+                                            <button className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/80 hover:bg-white/20 transition-colors duration-300">
+                                                <Download className="w-4 h-4" />
+                                                <span>Invoice</span>
+                                            </button>
+
+                                            {item.status === 'active' && (
+                                                <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full hover:scale-105 transition-transform duration-300">
+                                                    <Plus className="w-4 h-4" />
+                                                    <span>Book Service</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))
                     )}
                 </div>
+
+                {/* Bottom CTA */}
+                {filteredHistory.length > 0 && (
+                    <div className={`text-center mt-12 transition-all duration-1000 delay-600 ${
+                        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                    }`}>
+                        <button className="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 hover:scale-105">
+                            <span className="flex items-center gap-2">
+                                <Plus className="w-5 h-5" />
+                                Book New Appointment
+                            </span>
+                        </button>
+                    </div>
+                )}
             </div>
-
-            {/* Cancel Confirmation Modal */}
-            {showCancelModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8 max-w-md w-full">
-                        <div className="text-center">
-                            <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-                            <h3 className="text-2xl font-bold text-white mb-4">Cancel Booking?</h3>
-                            <p className="text-white/70 mb-6">
-                                Are you sure you want to cancel your booking? This action cannot be undone.
-                            </p>
-                            <div className="flex space-x-4">
-                                <button
-                                    onClick={() => setShowCancelModal(false)}
-                                    className="flex-1 px-6 py-3 bg-white/10 text-white font-semibold rounded-full hover:bg-white/20 transition-all"
-                                >
-                                    Keep Booking
-                                </button>
-                                <button
-                                    onClick={handleCancelBooking}
-                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white font-semibold rounded-full hover:scale-105 transition-all"
-                                >
-                                    Cancel Booking
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
 
-export default BookingDetails;
+export default BookingHistory;

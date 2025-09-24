@@ -1,45 +1,76 @@
-import { NextResponse } from "next/server";
+
 import { connectDB } from "@/lib/mongoose";
 import Booking from "@/model/bookingModel";
 
-export async function GET(req) {
-    await connectDB();
-    try {
-        const url = new URL(req.url);
-        const dateQuery = url.searchParams.get("date");
 
-        let filter = {};
-        if (dateQuery) {
-            const start = new Date(dateQuery);
-            start.setHours(0,0,0,0);
-            const end = new Date(dateQuery);
-            end.setHours(23,59,59,999);
-            filter.date = { $gte: start, $lte: end };
+export async function GET(req) {
+    try {
+        await connectDB();
+
+        const { searchParams } = new URL(req.url);
+        const dateParam = searchParams.get("date");
+
+        if (!dateParam) {
+            return new Response(
+                JSON.stringify({ error: "Missing date parameter" }),
+                { status: 400 }
+            );
         }
 
-        const bookings = await Booking.find(filter).sort({ time: 1 });
-        return NextResponse.json(bookings, { status: 200 });
+        // Fetch all bookings for that exact date
+        const bookings = await Booking.find({ date: dateParam });
+
+        // Map bookings to only needed fields
+        const result = bookings.map((b) => ({
+            username: b.username,
+            email: b.email,
+            phone: b.phone,
+            date: b.date,
+            time: b.time.slice(0, 5), // normalize to HH:MM
+            service: b.name,
+        }));
+
+        return new Response(JSON.stringify(result), { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 });
+        console.error("Error fetching bookings:", error);
+        return new Response(
+            JSON.stringify({ error: "Failed to fetch bookings" }),
+            { status: 500 }
+        );
     }
 }
 
 export async function POST(req) {
     await connectDB();
+
     try {
-        const data = await req.json();
+        // Parse incoming JSON
+        const body = await req.json();
 
-
-        if (!data.service || !data.date || !data.time || !data.specialist || !data.customer) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        // Optional: simple validation to see if required fields exist
+        const requiredFields = ["serviceId", "date", "time", "username", "email", "phone","bookingId"];
+        for (const field of requiredFields) {
+            if (!body[field]) {
+                return new Response(
+                    JSON.stringify({ success: false, error: `${field} is required` }),
+                    { status: 400, headers: { "Content-Type": "application/json" } }
+                );
+            }
         }
 
-        const newBooking = new Booking(data);
-        await newBooking.save();
 
-        return NextResponse.json(newBooking, { status: 201 });
+        const booking = new Booking(body);
+        await booking.save();
+
+        return new Response(
+            JSON.stringify({ success: true, booking, _id: booking._id }),
+            { status: 201, headers: { "Content-Type": "application/json" } }
+        );
     } catch (error) {
-        return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
+        console.error("Error in POST /bookings:", error);
+        return new Response(
+            JSON.stringify({ success: false, error: error.message }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+        );
     }
-
 }

@@ -119,10 +119,10 @@ export default function PricingDetailsPage() {
                 <div className="max-w-6xl mx-auto">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center px-6 py-3 rounded-lg space-x-2 border border-gray-400 text-white/70 hover:text-white hover:border-white transition-colors duration-300 mb-6 sm:mb-8 group"
+                        className="flex items-center px-6 py-3 rounded-lg space-x-2  text-white/70 hover:text-white  transition-colors duration-300 mb-6 sm:mb-8 group"
                     >
                         <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300"/>
-                        <span className="text-sm sm:text-base">Back to Pricing</span>
+                        <span className="text-sm sm:text-base">Back</span>
                     </button>
                 </div>
             </div>
