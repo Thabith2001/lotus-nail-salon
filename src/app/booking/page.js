@@ -205,29 +205,31 @@ const BookingSystem = () => {
             {/* Back Button */}
             <button
                 onClick={() => router.back()}
-                className="absolute top-3 left-3 sm:top-4 sm:left-4 flex items-center border border-gray-400 px-3 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm text-white/70 hover:text-white hover:border-white transition-colors duration-300 group rounded-lg z-50"
+                className="absolute top-4 left-4 flex items-center border border-gray-400 px-3 py-2 md:px-5 md:py-2.5 text-xs md:text-sm text-white/70 hover:text-white hover:border-white transition-all rounded-lg z-50 group"
             >
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 group-hover:-translate-x-1 transition-transform duration-300" />
-                <span className="ml-1 sm:ml-2">Back</span>
+                <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 group-hover:-translate-x-1 transition-transform" />
+                <span className="ml-2">Back</span>
             </button>
 
             {/* Header */}
-            <div className="relative z-10 text-center pt-16 sm:pt-20 pb-6 sm:pb-8">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
-                    Book Your{" "}
-                    <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-            Appointment
-          </span>
+            <div className="relative z-10 text-center pt-20 pb-10 px-4">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
+      <span className="block bg-gradient-to-r from-white via-pink-200 to-purple-200 bg-clip-text text-transparent">
+        Book Your
+      </span>
+                    <span className="block bg-gradient-to-r from-pink-300 via-rose-200 to-white bg-clip-text text-transparent">
+        Appointment
+      </span>
                 </h1>
-                <p className="text-white/70 text-sm sm:text-lg max-w-md sm:max-w-2xl mx-auto px-4">
+                <p className="text-white/70 text-sm sm:text-base lg:text-lg font-light max-w-2xl mx-auto">
                     Experience luxury nail care with our premium services and expert
                     technicians
                 </p>
             </div>
 
             {/* Step Indicator */}
-            <div className="relative z-10 flex justify-center mb-8 sm:mb-12 px-4">
-                <div className="bg-white/10 backdrop-blur-xl rounded-full border border-white/20 p-3 sm:p-6">
+            <div className="relative z-10 flex justify-center mb-10 px-6">
+                <div className="bg-white/10 backdrop-blur-xl rounded-full border border-white/20 py-3 px-5 sm:px-8">
                     <div className="flex items-center space-x-4 sm:space-x-8">
                         {[1, 2, 3, 4].map((step, index) => (
                             <React.Fragment key={step}>
@@ -238,7 +240,7 @@ const BookingSystem = () => {
                                 />
                                 {index < 3 && (
                                     <div
-                                        className={`w-8 sm:w-12 h-0.5 transition-colors duration-300 ${
+                                        className={`w-6 sm:w-10 md:w-16 h-0.5 transition-colors ${
                                             step < currentStep
                                                 ? "bg-gradient-to-r from-green-400 to-emerald-500"
                                                 : "bg-white/30"
@@ -251,9 +253,9 @@ const BookingSystem = () => {
                 </div>
             </div>
 
-            {/* Booking Steps */}
-            <div className="relative z-10 max-w-md sm:max-w-4xl mx-auto px-4 sm:px-6 pb-12">
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+            {/* Booking Card */}
+            <div className="relative z-10 max-w-lg sm:max-w-3xl lg:max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+                <div className="bg-white/5 backdrop-blur-xl rounded-2xl lg:rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
                     <servicesContext.Provider
                         value={{
                             selectedService,
@@ -275,108 +277,86 @@ const BookingSystem = () => {
                         {currentStep === 4 && <PaymentInformation />}
                     </servicesContext.Provider>
 
-                    {/* Navigation Buttons */}
-                    <div className="px-4 sm:px-8 py-4 sm:py-6 bg-white/5 border-t border-white/10">
-                        <div className="flex justify-between items-center">
+                    {/* Navigation */}
+                    <div className="px-4 sm:px-8 py-5 bg-white/5 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <button
+                            onClick={handlePrevStep}
+                            disabled={currentStep === 1}
+                            className={`flex items-center space-x-2 px-5 py-2 rounded-full font-semibold text-sm transition-all ${
+                                currentStep === 1
+                                    ? "text-white/40 cursor-not-allowed"
+                                    : "text-white hover:bg-white/10"
+                            }`}
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                            <span>Previous</span>
+                        </button>
+
+                        {currentStep === 4 ? (
                             <button
-                                onClick={handlePrevStep}
-                                disabled={currentStep === 1}
-                                className={`flex items-center space-x-1 sm:space-x-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold text-xs sm:text-sm transition-all ${
-                                    currentStep === 1
-                                        ? "text-white/40 cursor-not-allowed"
-                                        : "text-white hover:bg-white/10"
+                                onClick={handleSubmitBooking}
+                                disabled={!canProceedToNext() || isSubmitting}
+                                className={`flex items-center space-x-2 px-6 py-2 rounded-full font-semibold text-sm transition-all ${
+                                    canProceedToNext() && !isSubmitting
+                                        ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:scale-105"
+                                        : "bg-gray-600 text-gray-400 cursor-not-allowed"
                                 }`}
                             >
-                                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                                <span>Previous</span>
-                            </button>
-
-                            {currentStep === 4 ? (
-                                <button
-                                    onClick={handleSubmitBooking}
-                                    disabled={!canProceedToNext() || isSubmitting}
-                                    className={`flex items-center space-x-1 sm:space-x-2 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-xs sm:text-sm transition-all ${
-                                        canProceedToNext() && !isSubmitting
-                                            ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:scale-105"
-                                            : "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                    }`}
-                                >
-                                    {isSubmitting ? (
-                                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    ) : (
+                                {isSubmitting ? (
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <>
                                         <span>Complete Booking</span>
-                                    )}
-                                    {!isSubmitting && (
-                                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                                    )}
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={handleNextStep}
-                                    disabled={!canProceedToNext()}
-                                    className={`flex items-center space-x-1 sm:space-x-2 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-xs sm:text-sm transition-all ${
-                                        canProceedToNext()
-                                            ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:scale-105"
-                                            : "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                    }`}
-                                >
-                                    <span>Next</span>
-                                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                                </button>
-                            )}
-                        </div>
+                                        <CheckCircle className="w-4 h-4" />
+                                    </>
+                                )}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleNextStep}
+                                disabled={!canProceedToNext()}
+                                className={`flex items-center space-x-2 px-6 py-2 rounded-full font-semibold text-sm transition-all ${
+                                    canProceedToNext()
+                                        ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:scale-105"
+                                        : "bg-gray-600 text-gray-400 cursor-not-allowed"
+                                }`}
+                            >
+                                <span>Next</span>
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
 
             {/* Footer */}
-            <div className="relative z-10 text-center py-6 sm:py-8 px-4">
-                <div className="max-w-md sm:max-w-4xl mx-auto">
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
-                            <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-                                <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-pink-400" />
-                                <div>
-                                    <h3 className="text-white font-semibold text-sm sm:text-base">
-                                        Location
-                                    </h3>
-                                    <p className="text-white/60 text-xs sm:text-sm">
-                                        123 Beauty Lane
-                                        <br />
-                                        Luxury City, LC 12345
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-                                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
-                                <div>
-                                    <h3 className="text-white font-semibold text-sm sm:text-base">
-                                        Hours
-                                    </h3>
-                                    <p className="text-white/60 text-xs sm:text-sm">
-                                        Mon-Sat: 9AM-6PM
-                                        <br />
-                                        Sunday: 10AM-5PM
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-                                <Phone className="w-6 h-6 sm:w-8 sm:h-8 text-green-400" />
-                                <div>
-                                    <h3 className="text-white font-semibold text-sm sm:text-base">
-                                        Contact
-                                    </h3>
-                                    <p className="text-white/60 text-xs sm:text-sm">
-                                        (555) 123-NAILS
-                                        <br />
-                                        info@lotusSalon.com
-                                    </p>
-                                </div>
-                            </div>
+            <footer className="relative z-10 text-center py-10 px-4">
+                <div className="max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="flex flex-col items-center text-center">
+                            <MapPin className="w-6 h-6 text-pink-400 mb-2" />
+                            <h3 className="text-white font-semibold text-base">Location</h3>
+                            <p className="text-white/60 text-sm">
+                                123 Beauty Lane <br /> Luxury City, LC 12345
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                            <Clock className="w-6 h-6 text-blue-400 mb-2" />
+                            <h3 className="text-white font-semibold text-base">Hours</h3>
+                            <p className="text-white/60 text-sm">
+                                Mon–Sat: 9AM–6PM <br /> Sunday: 10AM–5PM
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                            <Phone className="w-6 h-6 text-green-400 mb-2" />
+                            <h3 className="text-white font-semibold text-base">Contact</h3>
+                            <p className="text-white/60 text-sm">
+                                (555) 123-NAILS <br /> info@lotusSalon.com
+                            </p>
                         </div>
                     </div>
                 </div>
-            </div>
+            </footer>
         </div>
     );
 };
