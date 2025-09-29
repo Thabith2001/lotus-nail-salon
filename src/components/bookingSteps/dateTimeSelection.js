@@ -20,6 +20,7 @@ const DateTimeSelection = () => {
     const [loading, setLoading] = useState(true);
     const [loadingBookings, setLoadingBookings] = useState(false);
 
+    // Detect user timezone
     useEffect(() => {
         try {
             const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -31,6 +32,7 @@ const DateTimeSelection = () => {
         }
     }, []);
 
+    // Format date for API query
     const getLocalDateStr = (date) => {
         return new Intl.DateTimeFormat("sv-SE", {
             timeZone: userTimezone,
@@ -40,6 +42,7 @@ const DateTimeSelection = () => {
         }).format(date);
     };
 
+    // Generate next 30 days
     const generateDates = () => {
         const dates = [];
         const today = new Date();
@@ -92,6 +95,7 @@ const DateTimeSelection = () => {
         }
     };
 
+    // Load bookings for selected date
     useEffect(() => {
         if (!selectedDate) return;
 
@@ -99,15 +103,16 @@ const DateTimeSelection = () => {
             setLoadingBookings(true);
             const booked = await fetchBookingsForDate(selectedDate);
             setBookedTimes(booked);
-            setSelectedTime(null); // Force re-render
+            setSelectedTime(null); // reset time when changing date
             setLoadingBookings(false);
         };
 
         load();
-        window.addEventListener("orientationchange", load); // Refresh on mobile orientation change
+        window.addEventListener("orientationchange", load); // refresh on mobile orientation change
         return () => window.removeEventListener("orientationchange", load);
     }, [selectedDate]);
 
+    // Disable past slots for today
     const isPastTime = (dateStr, timeStr) => {
         const now = new Date();
         const todayStr = getLocalDateStr(now);
@@ -130,6 +135,7 @@ const DateTimeSelection = () => {
         }
     };
 
+    // If no service selected
     if (!selectedService) {
         return (
             <div className="min-h-[400px] flex items-center justify-center">
@@ -169,7 +175,7 @@ const DateTimeSelection = () => {
                         </h3>
                         {selectedDate && (
                             <span className="text-sm text-purple-400 font-medium">
-                                {formatDate(new Date(selectedDate + 'T00:00:00'))}
+                                {formatDate(new Date(selectedDate + "T00:00:00"))}
                             </span>
                         )}
                     </div>
@@ -218,10 +224,6 @@ const DateTimeSelection = () => {
                         loadingBookings ? (
                             <div className="flex items-center justify-center h-[400px]">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
-                            </div>
-                        ) : bookedTimes.length === 0 ? (
-                            <div className="flex items-center justify-center h-[400px] text-white/50">
-                                Loading available times...
                             </div>
                         ) : (
                             <div className="grid grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
