@@ -20,7 +20,6 @@ const DateTimeSelection = () => {
     const [loading, setLoading] = useState(true);
     const [loadingBookings, setLoadingBookings] = useState(false);
 
-    // Detect user's timezone
     useEffect(() => {
         try {
             const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -71,24 +70,22 @@ const DateTimeSelection = () => {
         });
     };
 
-    // Fetch booked times
     const normalizeTime = (timeString) => {
         try {
             const d = new Date(`2000-01-01 ${timeString}`);
             const hours = String(d.getHours()).padStart(2, "0");
             const minutes = String(d.getMinutes()).padStart(2, "0");
-            return `${hours}:${minutes}`; // e.g. "09:00"
+            return `${hours}:${minutes}`;
         } catch {
             return timeString;
         }
     };
 
-// Fetch booked times
     const fetchBookingsForDate = async (dateStr) => {
         try {
             const res = await axios.get(`/api/bookings/?date=${dateStr}`);
             const booked = res.data.bookedTimes || [];
-            return booked.map((t) => normalizeTime(t)); // normalize here
+            return booked.map((t) => normalizeTime(t));
         } catch (err) {
             console.error("Error fetching bookings:", err);
             return [];
@@ -97,24 +94,27 @@ const DateTimeSelection = () => {
 
     useEffect(() => {
         if (!selectedDate) return;
+
         const load = async () => {
             setLoadingBookings(true);
             const booked = await fetchBookingsForDate(selectedDate);
             setBookedTimes(booked);
+            setSelectedTime(null); // Force re-render
             setLoadingBookings(false);
         };
+
         load();
+        window.addEventListener("orientationchange", load); // Refresh on mobile orientation change
+        return () => window.removeEventListener("orientationchange", load);
     }, [selectedDate]);
 
     const isPastTime = (dateStr, timeStr) => {
         const now = new Date();
         const todayStr = getLocalDateStr(now);
-
         if (dateStr !== todayStr) return false;
 
         const [year, month, day] = dateStr.split("-").map(Number);
         const [h, m] = timeStr.split(":").map(Number);
-
         const slot = new Date(year, month - 1, day, h, m);
         return slot < now;
     };
@@ -151,7 +151,7 @@ const DateTimeSelection = () => {
 
     return (
         <div className="max-w-7xl mx-auto p-6 space-y-8 text-white">
-            {/* Header Section */}
+            {/* Header */}
             <div className="text-center space-y-2">
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                     Choose Your Appointment
@@ -165,10 +165,7 @@ const DateTimeSelection = () => {
                 <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-xl font-semibold flex items-center gap-2">
-                            <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            Select Date
+                            📅 Select Date
                         </h3>
                         {selectedDate && (
                             <span className="text-sm text-purple-400 font-medium">
@@ -208,10 +205,7 @@ const DateTimeSelection = () => {
                 <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-xl">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-xl font-semibold flex items-center gap-2">
-                            <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Select Time
+                            ⏰ Select Time
                         </h3>
                         {selectedTime && (
                             <span className="text-sm text-green-400 font-medium">
@@ -219,10 +213,15 @@ const DateTimeSelection = () => {
                             </span>
                         )}
                     </div>
+
                     {selectedDate ? (
                         loadingBookings ? (
                             <div className="flex items-center justify-center h-[400px]">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+                            </div>
+                        ) : bookedTimes.length === 0 ? (
+                            <div className="flex items-center justify-center h-[400px] text-white/50">
+                                Loading available times...
                             </div>
                         ) : (
                             <div className="grid grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
@@ -271,9 +270,6 @@ const DateTimeSelection = () => {
                         )
                     ) : (
                         <div className="flex flex-col items-center justify-center h-[400px] text-white/50">
-                            <svg className="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
                             <p>Select a date first to see available time slots</p>
                         </div>
                     )}
