@@ -1,39 +1,75 @@
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongoose";
+import {NextResponse} from "next/server";
+import {connectDB} from "@/lib/mongoose";
 import UserMembership from "@/model/userMembershipModel";
 
-// GET all user memberships
-export async function GET() {
+
+export async function GET(req) {
     await connectDB();
     try {
-        const memberships = await UserMembership.find({})
-            .populate("userId", "username email")
-            .populate("membershipPackageId", "name type price durationDays totalSessions perks")
-            .populate("paymentId", "amount status method");
-        return NextResponse.json({ success: true, memberships }, { status: 200 });
-    } catch (error) {
-        console.error("GET memberships error:", error);
-        return NextResponse.json({ error: "Failed to fetch memberships" }, { status: 500 });
+        const {searchParams} = new URL(req.url);
+        const userId = searchParams.get("userId");
+
+        const membership = await UserMembership.findOne({userId});
+
+        if (!membership) {
+            return NextResponse.json({
+                success: false,
+                message: "User membership not found"
+            }, {status: 200});
+        }
+
+        return NextResponse.json({
+            success: true,
+            results: membership
+        }, {status: 200});
+
+    } catch (err) {
+        return NextResponse.json({
+            success: false,
+            message: "Internal server error",
+            error: err.message
+        }, {status: 500});
     }
 }
 
-// POST: create a new user membership
+
 export async function POST(req) {
     await connectDB();
     try {
-        const data = await req.json();
+        const body = await req.json();
+        const { userId, membershipPackage, startDate, endDate, remainingSessions, status, paymentId } = body;
 
-        // Basic validation
-        if (!data.userId || !data.membershipPackageId) {
-            return NextResponse.json({ success: false, error: "userId and membershipPackageId are required" }, { status: 400 });
+        if (!userId) {
+            return NextResponse.json(
+                { success: false, message: "Missing userId" },
+                { status: 400 }
+            );
         }
 
-        const newMembership = new UserMembership(data);
-        await newMembership.save();
+        const updatedMembership = await UserMembership.findOneAndUpdate(
+            { userId },
+            {
+                $set: {
+                    membershipPackage,
+                    startDate,
+                    endDate,
+                    remainingSessions,
+                    status,
+                    paymentId,
+                },
+            },
+            { new: true, upsert: true }
+        );
 
-        return NextResponse.json({ success: true, membership: newMembership }, { status: 201 });
+        return NextResponse.json(
+            { success: true, results: updatedMembership },
+            { status: 200 }
+        );
     } catch (error) {
         console.error("POST membership error:", error);
-        return NextResponse.json({ error: "Failed to create membership" }, { status: 500 });
+        return NextResponse.json(
+            { success: false, message: error.message || "Failed to create/update membership" },
+            { status: 500 }
+        );
     }
 }

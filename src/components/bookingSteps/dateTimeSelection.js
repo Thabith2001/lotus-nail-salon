@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from "react";
-import { servicesContext } from "@/app/booking/page";
-import { timeSlots } from "@/data/data";
+import React, {useContext, useEffect, useState} from "react";
+import {servicesContext} from "@/app/booking/page";
+import {timeSlots} from "@/data/data";
 import axios from "axios";
 
 const DateTimeSelection = () => {
@@ -171,10 +171,8 @@ const DateTimeSelection = () => {
                 .filter(Boolean);
 
             // dedupe
-            const uniq = Array.from(new Set(normalized));
             // for debugging:
-            // console.log("Fetched booked times for", dateStr, uniq);
-            return uniq;
+            return Array.from(new Set(normalized));
         } catch (err) {
             console.error("Error fetching bookings:", err);
             return [];
