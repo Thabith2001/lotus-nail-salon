@@ -174,10 +174,10 @@ const Services = () => {
                             program for special perks and savings
                         </p>
 
-                        <div
-                            onClick={() => {router.push(`/booking`)}}
-                            className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                            <button className="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 hover:scale-105 flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                            <button
+                                onClick={() => {router.push(`/booking`)}}
+                                className="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 hover:scale-105 flex items-center gap-2">
                                 <Calendar className="w-5 h-5" />
                                 Book an Appointment
                             </button>
