@@ -99,7 +99,6 @@ const Services = () => {
                         return (
 
                             <div
-                                onClick={() => {router.push(`/booking`)}}
                                 key={service._id}
                                 className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:shadow-2xl hover:shadow-pink-500/20 transition-all duration-500 hover:scale-105 cursor-pointer"
                                 onMouseEnter={() => setHoveredService(service._id)}
@@ -175,13 +174,17 @@ const Services = () => {
                             program for special perks and savings
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <div
+                            onClick={() => {router.push(`/booking`)}}
+                            className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                             <button className="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 hover:scale-105 flex items-center gap-2">
                                 <Calendar className="w-5 h-5" />
                                 Book an Appointment
                             </button>
 
-                            <button className="px-8 py-4 bg-white/10 backdrop-blur-lg border-2 border-white/30 text-white font-bold rounded-full hover:bg-white/20 transition-all duration-300 hover:scale-105 flex items-center gap-2">
+                            <button
+                                onClick={() => router.push("/#pricing")}
+                                className="px-8 py-4 bg-white/10 backdrop-blur-lg border-2 border-white/30 text-white font-bold rounded-full hover:bg-white/20 transition-all duration-300 hover:scale-105 flex items-center gap-2">
                                 <Crown className="w-5 h-5 text-pink-400" />
                                 View Memberships
                             </button>
