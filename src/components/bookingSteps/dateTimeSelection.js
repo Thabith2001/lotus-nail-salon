@@ -142,10 +142,7 @@ const DateTimeSelection = () => {
             const res = await axios.get(`/api/bookings?date=${dateStr}`);
             const data = res.data ?? {};
 
-            // 3 possible shapes:
-            // 1) { bookedTimes: ["15:30", ...] }
-            // 2) { bookings: [{ time: "15:30" }, ...] }
-            // 3) an array of bookings or times directly
+
             let raw = data.bookedTimes ?? data.bookings ?? data;
             // If server returned an object with date property, try bookings property
             if (!raw && typeof data === "object" && Array.isArray(data.bookings)) raw = data.bookings;

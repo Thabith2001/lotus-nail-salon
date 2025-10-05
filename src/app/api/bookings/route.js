@@ -2,38 +2,57 @@ import {NextResponse} from "next/server";
 import Booking from "@/model/bookingModel";
 import {connectDB} from "@/lib/mongoose";
 
-
 export async function GET(req) {
     try {
         await connectDB();
-        const {searchParams} = new URL(req.url);
+        const { searchParams } = new URL(req.url);
+
+        const userId = searchParams.get("userId");
         const dateParam = searchParams.get("date");
 
-        if (!dateParam) {
-            return NextResponse.json({error: "Missing date parameter"},{ status: 400});
+
+        const filter = {};
+        if (dateParam) filter.bookingDate = dateParam;
+        if (userId) filter.userId = userId;
+
+        if (!dateParam && !userId) {
+            return NextResponse.json(
+                { error: "Please provide either 'date' or 'userId' parameter." },
+                { status: 400 }
+            );
         }
 
-        // Query by exact bookingDate (string)
-        const bookings = await Booking.find({bookingDate: dateParam}).select("time -_id");
 
-        // Extract only the booked times
-        const bookedTimes = bookings.map(b => b.time);
+        const bookings = await Booking.find(filter);
 
-        return NextResponse.json({date: dateParam, bookedTimes}, {status: 200});
+        if (dateParam && !userId) {
+            const bookedTimes = bookings.map(b => b.time);
+            return NextResponse.json(
+                { date: dateParam, bookedTimes },
+                { status: 200 }
+            );
+        }
+
+
+        return NextResponse.json({ bookings }, { status: 200 });
+
     } catch (err) {
-        console.error("Error fetching booked times:", err);
-        return NextResponse.json({error: "Failed to fetch booked times"}, {status: 500});
+        console.error("Error fetching bookings:", err);
+        return NextResponse.json(
+            { error: "Failed to fetch bookings" },
+            { status: 500 }
+        );
     }
 }
 
 
-// POST new booking
+
 export async function POST(req) {
     try {
         await connectDB();
         const body = await req.json();
 
-        // Required fields
+
         const required = ["customerName", "email", "phone", "service", "bookingDate", "time"];
         for (const field of required) {
             if (!body[field]) {
@@ -42,7 +61,7 @@ export async function POST(req) {
             }
         }
 
-        // Check if booking already exists (to prevent duplicates)
+
         const existing = await Booking.findOne({
             bookingId: body.bookingId,
         });
@@ -52,7 +71,7 @@ export async function POST(req) {
                 success: false, error: "Booking already exists", booking: existing}, {status: 409});
         }
 
-        // Create new booking
+
         const booking = new Booking({
             bookingId: body.bookingId,
             customerName: body.customerName,

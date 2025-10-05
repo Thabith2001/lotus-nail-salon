@@ -2,6 +2,37 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoose";
 import UserMembership from "@/model/userMembershipModel";
 
+
+export async function GET(req, { params }) {
+    await connectDB();
+
+    try {
+        const { id } = params;
+
+        const membership = await UserMembership.findById(id);
+
+        if (!membership) {
+            return NextResponse.json(
+                { error: "Membership not found" },
+                { status: 404 }
+            );
+        }
+
+
+        return NextResponse.json(
+            { success: true, membership },
+            { status: 200 }
+        );
+
+    } catch (error) {
+        console.error("GET membership error:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch membership" },
+            { status: 500 }
+        );
+    }
+}
+
 // PATCH update membership
 export async function PATCH(req, { params }) {
     await connectDB();

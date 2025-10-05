@@ -1,9 +1,8 @@
-// app/api/payments/[id]/route.js
+
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoose";
 import Payment from "@/model/paymentModel";
 
-// GET single payment
 export async function GET(req, { params }) {
     await connectDB();
     try {
