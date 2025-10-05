@@ -6,6 +6,8 @@ const userMembershipSchema = new mongoose.Schema(
         membershipPackage: { type: String, enum: ["membership", "package"], required: true },
         startDate: { type: Date, default: Date.now },
         endDate: { type: Date },
+        service: { type: String, ref: "Service" },
+        sessions: { type: Number, default: 0 },
         remainingSessions: { type: Number, default: 0 },
         status: { type: String, enum: ["active", "expired"], default: "active" },
         paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },

@@ -77,10 +77,10 @@ const About = () => {
                             <p className="text-xl md:text-xl text-white/80 leading-relaxed ">
                                 Welcome to <span className="font-semibold bg-gradient-to-r from-pink-300 to-purple-300 bg-clip-text text-transparent">Lotus Salon</span>, where artistry meets luxury in every detail. We&apos;ve dedicated ourselves to redefining nail care through exceptional service and innovative techniques.
                             </p>
-                            <p className="text-lg md:text-xl text-white/70 leading-relaxed">
+                            <p className="text-lg md:text-xl text-white/70 leading-relaxed font-extralight">
                                 Our team of master nail artists combines years of expertise with cutting-edge techniques to deliver experiences that transcend ordinary nail care. Every visit is a journey of relaxation, creativity, and personal expression.
                             </p>
-                            <p className="text-lg md:text-xl text-white/70 leading-relaxed">
+                            <p className="text-lg md:text-xl text-white/70 leading-relaxed font-extralight">
                                 From classic elegance to avant-garde designs, we believe your nails are a canvas for self-expression. Let us transform your vision into reality in our tranquil, luxury environment.
                             </p>
                         </div>

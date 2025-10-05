@@ -37,38 +37,50 @@ export async function POST(req) {
     await connectDB();
     try {
         const body = await req.json();
-        const { userId, membershipPackage, startDate, endDate, remainingSessions, status, paymentId } = body;
+        const {
+            userId,
+            membershipPackage,
+            startDate,
+            endDate,
+            remainingSessions,
+            status,
+            paymentId,
+            service,
+            sessions
+        } = body;
 
-        if (!userId) {
+        // --- Validation ---
+        if (!userId || !membershipPackage || !service) {
             return NextResponse.json(
-                { success: false, message: "Missing userId" },
+                { success: false, message: "Missing required fields (userId, membershipPackage, or service)" },
                 { status: 400 }
             );
         }
 
-        const updatedMembership = await UserMembership.findOneAndUpdate(
-            { userId },
-            {
-                $set: {
-                    membershipPackage,
-                    startDate,
-                    endDate,
-                    remainingSessions,
-                    status,
-                    paymentId,
-                },
-            },
-            { new: true, upsert: true }
-        );
+        // --- Create new membership ---
+        const newMembership = await UserMembership.create({
+            userId,
+            membershipPackage,
+            startDate,
+            endDate,
+            service,
+            sessions: sessions || 1,
+            remainingSessions: remainingSessions ?? (sessions || 1),
+            status: status || "active",
+            paymentId: paymentId || null,
+        });
 
         return NextResponse.json(
-            { success: true, results: updatedMembership },
-            { status: 200 }
+            { success: true, results: newMembership },
+            { status: 201 }
         );
     } catch (error) {
         console.error("POST membership error:", error);
         return NextResponse.json(
-            { success: false, message: error.message || "Failed to create/update membership" },
+            {
+                success: false,
+                message: error.message || "Failed to create membership",
+            },
             { status: 500 }
         );
     }

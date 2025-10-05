@@ -193,8 +193,10 @@ const BookingSystem = () => {
     //  Submit booking
     const handleSubmitBooking = async (paymentDetails = {}) => {
         if (isSubmitting) return;
+
+        // --- VALIDATION ---
         if (!selectedDate || !selectedTime) {
-            alert("Please select date and time.");
+            alert("Please select a date and time.");
             return;
         }
         if (!usingMembership && !hasSharedData && !selectedService) {
@@ -210,8 +212,14 @@ const BookingSystem = () => {
             let membership = subscription;
             let newPayment = null;
 
+            // --- Check membership state ---
+            const noActiveMembership =
+                !membership ||
+                membership.status !== "active" ||
+                membership.remainingSessions <= 0;
 
-            if (!usingMembership || !subscription || subscription?.status !== "active" || subscription?.remainingSessions <= 0) {
+
+            if (!usingMembership || noActiveMembership) {
                 const paymentPayload = {
                     amount: selectedService?.price || 0,
                     method: paymentDetails?.method || "credit_card",
@@ -223,30 +231,57 @@ const BookingSystem = () => {
                 const paymentRes = await axios.post("/api/payments", paymentPayload);
                 newPayment = paymentRes?.data;
 
-                // If they bought a subscription as part of this service
-                if (selectedService?.subscription === "membership" && newPayment?.results?._id) {
-                    const resp = await axios.post("/api/user-membership", {
+                // --- Create membership if this service includes one ---
+                if (selectedService?.subscription === "membership") {
+                    const createMembership = await axios.post("/api/user-membership", {
                         userId: usersId,
-                        membershipPackage: selectedService?.subscription,
+                        membershipPackage: selectedService.subscription,
                         startDate: formatDate(new Date()),
-                        endDate: formatDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
-                        remainingSessions: Number(selectedService?.sessions)-1 || 1,
-                        status: "active",
+                        endDate: formatDate(
+                            new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                        ),
+                        service: selectedService.name,
+                        sessions: Number(selectedService.sessions) || 1,
+                        remainingSessions:
+                            Math.max((Number(selectedService.sessions) || 1) - 1, 0),
+                        status:
+                            (Number(selectedService.sessions) || 1) > 1
+                                ? "active"
+                                : "expired",
                         paymentId: newPayment?.results?._id || null,
                     });
-                    membership = resp.data?.results;
+
+                    membership = createMembership?.data?.results;
+                    setSubscription(membership);
+                    setUsingMembership(true);
                 }
-            }
-            // --- CASE 2: user already has an active membership ---
-            else if (usingMembership && subscription?.status === "active" && subscription?.remainingSessions > 0) {
-                const resp = await axios.patch(`/api/user-membership/${subscription?._id}`, {
-                    remainingSessions: subscription.remainingSessions - 1,
-                    status: subscription.remainingSessions - 1 > 0 ? "active" : "expired",
-                });
+            } else if (usingMembership && membership?.status === "active") {
+                if (membership.service !== selectedService?.name) {
+                    alert(
+                        `Your current membership is for "${membership.service}", not "${selectedService.name}". Please purchase a new membership.`
+                    );
+                    setIsSubmitting(false);
+                    router.push("/#pricing");
+                    return;
+                }
+
+                const newRemaining = Math.max(
+                    (membership.remainingSessions || 1) - 1,
+                    0
+                );
+                const newStatus = newRemaining > 0 ? "active" : "expired";
+
+                const resp = await axios.patch(
+                    `/api/user-membership/${membership._id}`,
+                    {
+                        remainingSessions: newRemaining,
+                        status: newStatus,
+                    }
+                );
                 membership = resp.data?.results;
             }
 
-            // --- BOOKING CREATION ---
+
             const bookingPayload = {
                 bookingId: bookingCode,
                 userId: usersId,
@@ -258,31 +293,42 @@ const BookingSystem = () => {
                 time: formatTime(selectedTime),
                 membershipId: membership?._id || null,
                 paymentId: newPayment?.results?._id || membership?.paymentId || null,
-                paymentStatus: membership && !newPayment ? "covered by membership" : (newPayment?.results?.status || "pending"),
+                paymentStatus:
+                    membership && !newPayment
+                        ? "covered by membership"
+                        : newPayment?.results?.status || "pending",
+                reasons: "empty",
+                status: new Date(selectedDate) > new Date() ? "upcoming" : "completed",
             };
 
-            const resp = await axios.post("/api/bookings", bookingPayload);
+            const bookingRes = await axios.post("/api/bookings", bookingPayload);
 
-            // Extra safety: sync membership sessions after booking
-            if (resp?.status === 201 && membership?.status === "active" && usingMembership) {
-                const currentRemaining = Number(membership?.remainingSessions);
-                const updatedStatus = currentRemaining > 0 ? "active" : "expired";
 
-                const updateResp = await axios.patch(`/api/user-membership/${membership?._id}`, {
-                    remainingSessions: currentRemaining,
+            if (bookingRes?.status === 201 && usingMembership && membership?._id) {
+                const updatedRemaining = Math.max(
+                    membership?.remainingSessions || 0,
+                    0
+                );
+                const updatedStatus = updatedRemaining > 0 ? "active" : "expired";
+
+                await axios.patch(`/api/user-membership/${membership._id}`, {
+                    remainingSessions: updatedRemaining,
                     status: updatedStatus,
                 });
-
             }
-            setBookingComplete(true);
 
+            setBookingComplete(true);
         } catch (err) {
             console.error("Booking submission failed:", err);
-            alert(err.response?.data?.message || "Something went wrong while creating the booking.");
+            alert(
+                err.response?.data?.message ||
+                "Something went wrong while creating the booking."
+            );
         } finally {
             setIsSubmitting(false);
         }
     };
+
 
     //  Booking complete page
     if (bookingComplete) {

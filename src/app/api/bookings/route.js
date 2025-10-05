@@ -5,7 +5,7 @@ import {connectDB} from "@/lib/mongoose";
 export async function GET(req) {
     try {
         await connectDB();
-        const { searchParams } = new URL(req.url);
+        const {searchParams} = new URL(req.url);
 
         const userId = searchParams.get("userId");
         const dateParam = searchParams.get("date");
@@ -17,8 +17,8 @@ export async function GET(req) {
 
         if (!dateParam && !userId) {
             return NextResponse.json(
-                { error: "Please provide either 'date' or 'userId' parameter." },
-                { status: 400 }
+                {error: "Please provide either 'date' or 'userId' parameter."},
+                {status: 400}
             );
         }
 
@@ -28,23 +28,22 @@ export async function GET(req) {
         if (dateParam && !userId) {
             const bookedTimes = bookings.map(b => b.time);
             return NextResponse.json(
-                { date: dateParam, bookedTimes },
-                { status: 200 }
+                {date: dateParam, bookedTimes},
+                {status: 200}
             );
         }
 
 
-        return NextResponse.json({ bookings }, { status: 200 });
+        return NextResponse.json({bookings}, {status: 200});
 
     } catch (err) {
         console.error("Error fetching bookings:", err);
         return NextResponse.json(
-            { error: "Failed to fetch bookings" },
-            { status: 500 }
+            {error: "Failed to fetch bookings"},
+            {status: 500}
         );
     }
 }
-
 
 
 export async function POST(req) {
@@ -57,7 +56,8 @@ export async function POST(req) {
         for (const field of required) {
             if (!body[field]) {
                 return NextResponse.json({
-                    success: false, error: `${field} is required`}, {status: 400});
+                    success: false, error: `${field} is required`
+                }, {status: 400});
             }
         }
 
@@ -68,7 +68,8 @@ export async function POST(req) {
 
         if (existing) {
             return NextResponse.json({
-                success: false, error: "Booking already exists", booking: existing}, {status: 409});
+                success: false, error: "Booking already exists", booking: existing
+            }, {status: 409});
         }
 
 
@@ -83,16 +84,20 @@ export async function POST(req) {
             paymentStatus: body.paymentStatus,
             userId: body.userId,
             paymentId: body.paymentId,
-            userMembershipId:body.membershipId,
+            userMembershipId: body.membershipId,
+            reasons: body.reasons,
+            cancellationDate: null,
+            status: body.status,
         });
 
         console.log("New booking created:", booking);
-         await booking.save();
+        await booking.save();
 
         return NextResponse.json({success: true, booking}, {status: 201});
     } catch (err) {
         console.error("POST booking error:", err);
         return NextResponse.json({
-            success: false, error: "Failed to create booking"}, {status: 500});
+            success: false, error: "Failed to create booking"
+        }, {status: 500});
     }
 }

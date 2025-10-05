@@ -6,8 +6,19 @@ import Payment from "@/model/paymentModel";
 export async function GET(req, { params }) {
     await connectDB();
     try {
-        const payment = await Payment.findById(params.id);
-        if (!payment) return NextResponse.json({ error: "Payment not found" }, { status: 404 });
+        const { id } = await params;
+
+        if (!id) {
+            return NextResponse.json({ error: "Payment ID is required" }, { status: 400 });
+        }
+
+
+        const payment = await Payment.findById(id);
+
+        if (!payment) {
+            return NextResponse.json({ error: "Payment not found" }, { status: 404 });
+        }
+
         return NextResponse.json({ success: true, payment }, { status: 200 });
     } catch (error) {
         console.error("GET payment error:", error);

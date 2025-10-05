@@ -7,7 +7,7 @@ export async function GET(req, { params }) {
     await connectDB();
 
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const membership = await UserMembership.findById(id);
 
