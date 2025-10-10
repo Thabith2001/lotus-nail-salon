@@ -220,22 +220,27 @@ const RescheduleModal = () => {
                             </div>
 
                             {/* Date Selection */}
-                            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-5 border border-purple-400/30">
+                            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl p-4 sm:p-6 border border-purple-400/30 w-full">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <Calendar className="w-5 h-5 text-purple-400" />
-                                    <h4 className="text-white font-bold">Select New Date</h4>
+                                    <Calendar className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                                    <h4 className="text-white font-semibold text-sm sm:text-base">
+                                        Select New Date
+                                    </h4>
                                 </div>
-                                <input
-                                    type="date"
-                                    value={rescheduleDate}
-                                    onChange={(e) => {
-                                        setRescheduleDate(e.target.value);
-                                        setRescheduleTime("");
-                                        setError("");
-                                    }}
-                                    min={new Date().toISOString().split("T")[0]}
-                                    className="w-full  px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/30 transition-all cursor-pointer"
-                                />
+
+                                <div className="w-full">
+                                    <input
+                                        type="date"
+                                        value={rescheduleDate}
+                                        onChange={(e) => {
+                                            setRescheduleDate(e.target.value);
+                                            setRescheduleTime("");
+                                            setError("");
+                                        }}
+                                        min={new Date().toISOString().split("T")[0]}
+                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm sm:text-base focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/30 transition-all cursor-pointer placeholder-white/50"
+                                    />
+                                </div>
                             </div>
 
                             {/* Time Selection */}
