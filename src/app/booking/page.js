@@ -12,7 +12,7 @@ import BookingComplete from "@/components/ui/bookingComplete";
 import PurchasedItemDisplay from "@/components/bookingSteps/purchasedItems";
 
 import {useAuthModal} from "@/context/authModelContext";
-import {useAuth} from "@/context/contextAuth";
+import {useAuth} from "@/context/authContext";
 import {useData} from "@/helper/dataProvider";
 import {useSparkles} from "@/hooks/useSparkles";
 

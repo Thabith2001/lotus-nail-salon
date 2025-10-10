@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Users, Award, Star, Sparkles, ArrowRight } from "lucide-react";
 import Button from "@/components/buttons/buttons";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/contextAuth";
+import { useAuth } from "@/context/authContext";
 import { useAuthModal } from "@/context/authModelContext";
 import { useAnimatedCounters } from "@/hooks/useCounter";
 

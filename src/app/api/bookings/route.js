@@ -2,40 +2,44 @@ import {NextResponse} from "next/server";
 import Booking from "@/model/bookingModel";
 import {connectDB} from "@/lib/mongoose";
 
+
 export async function GET(req) {
     try {
         await connectDB();
-        const {searchParams} = new URL(req.url);
 
+        const {searchParams} = new URL(req.url);
         const userId = searchParams.get("userId");
         const dateParam = searchParams.get("date");
 
+        // If no filters, return all bookings
+        if (!userId && !dateParam) {
+            const resp = await Booking.find();
+            if (!resp || resp.length === 0) {
+                return NextResponse.json(
+                    {error: "No bookings found"},
+                    {status: 404}
+                );
+            }
+            return NextResponse.json({bookings: resp}, {status: 200});
+        }
 
+        // Otherwise, apply filters
         const filter = {};
         if (dateParam) filter.bookingDate = dateParam;
         if (userId) filter.userId = userId;
 
-        if (!dateParam && !userId) {
-            return NextResponse.json(
-                {error: "Please provide either 'date' or 'userId' parameter."},
-                {status: 400}
-            );
-        }
-
-
         const bookings = await Booking.find(filter);
 
+        // If only filtering by date, return booked times
         if (dateParam && !userId) {
-            const bookedTimes = bookings.map(b => b.time);
+            const bookedTimes = bookings.map((b) => b.time);
             return NextResponse.json(
                 {date: dateParam, bookedTimes},
                 {status: 200}
             );
         }
-
-
+        // Otherwise, return filtered bookings
         return NextResponse.json({bookings}, {status: 200});
-
     } catch (err) {
         console.error("Error fetching bookings:", err);
         return NextResponse.json(
@@ -44,7 +48,6 @@ export async function GET(req) {
         );
     }
 }
-
 
 export async function POST(req) {
     try {

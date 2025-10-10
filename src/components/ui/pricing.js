@@ -9,7 +9,7 @@ import RenderMemberships from "@/components/pricingRendering/renderMembership";
 import { useGsap } from "@/hooks/useGsap";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useAuth } from "@/context/contextAuth";
+import { useAuth } from "@/context/authContext";
 import { useAuthModal } from "@/context/authModelContext";
 
 gsap.registerPlugin(ScrollTrigger);

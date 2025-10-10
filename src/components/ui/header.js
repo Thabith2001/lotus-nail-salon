@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { links } from "@/data/data";
 import { Menu, X } from "lucide-react";
-import { useAuth } from "@/context/contextAuth";
+import { useAuth } from "@/context/authContext";
 import { useAuthModal } from "@/context/authModelContext";
 import Button from "@/components/buttons/buttons";
 import Link from "next/link";

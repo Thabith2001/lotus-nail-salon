@@ -18,7 +18,7 @@ import {
     AlertCircle
 } from "lucide-react";
 import axios from "axios";
-import { useAuth } from "@/context/contextAuth";
+import { useAuth } from "@/context/authContext";
 import { useAuthModal } from "@/context/authModelContext";
 import toast from "react-hot-toast";
 import {useSparkles} from "@/hooks/useSparkles";

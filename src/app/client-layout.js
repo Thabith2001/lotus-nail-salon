@@ -1,6 +1,6 @@
 "use client";
 
-import {AuthProvider} from "@/context/contextAuth";
+import {AuthProvider} from "@/context/authContext";
 import {AuthModalProvider, useAuthModal} from "@/context/authModelContext";
 import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
@@ -11,6 +11,7 @@ import {usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
 import {SessionProvider} from "next-auth/react";
 import {TimezoneProvider} from "@/context/TimeZoneContext";
+
 
 function AuthModalWrapper() {
     const {isAuthOpen, closeAuth} = useAuthModal();
@@ -30,7 +31,8 @@ export default function ClientLayout({children}) {
         pathname?.startsWith("/billing")
         || pathname?.startsWith("/appointment-details")
         || pathname?.startsWith("/admin")
-        || pathname?.startsWith("/booking");
+        || pathname?.startsWith("/booking")
+
 
 
     return (
@@ -50,6 +52,7 @@ export default function ClientLayout({children}) {
                 </AuthModalProvider>
             </AuthProvider>
         </SessionProvider>
+
 
     );
 }

@@ -10,16 +10,17 @@ export const links = [
 ];
 
 import {
-    Award,
-    BookOpen, Brush, Clock, Crown,
+    Activity,
+    Award, BarChart3,
+    BookOpen, Brush, Calendar, Clock, Crown,
     Facebook, Gift,
     Heart,
-    Instagram, Mail, MapPin,
-    Palette, PhoneCall, Shield,
+    Instagram, Mail, MapPin, Package,
+    Palette, PhoneCall, Settings, Shield,
     Sparkles,
     TrendingUp,
     Twitter,
-    User,
+    User, Users,
     Youtube
 } from "lucide-react";
 
@@ -29,7 +30,6 @@ export const businessHours = [
     {day: 'Saturday', hours: '9:00 AM - 7:00 PM', status: 'open'},
     {day: 'Sunday', hours: '10:00 AM - 6:00 PM', status: 'open'},
 ];
-
 
 
 export const socialLinks = [
@@ -279,4 +279,13 @@ export const specialists = [
     }
 ];
 
+
+export const menuItems = [
+    {id: 'overview', label: 'Overview', icon: BarChart3},
+    {id: 'bookings', label: 'Bookings', icon: Calendar},
+    {id: 'customers', label: 'Customers', icon: Users},
+    {id: 'services', label: 'Services', icon: Package},
+    {id: 'analytics', label: 'Analytics', icon: Activity},
+    {id:'employees', label: 'Employees', icon: User},
+];
 

@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import {ArrowRight, Calendar, ChevronRight, Sparkles} from "lucide-react";
 import Button from "@/components/buttons/buttons";
 import { useGsap } from "@/hooks/useGsap";
-import { useAuth } from "@/context/contextAuth";
+import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
 import { useAuthModal } from "@/context/authModelContext";
 

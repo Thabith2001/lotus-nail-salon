@@ -35,21 +35,28 @@
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(168, 85, 247, 0.5);
     border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(168, 85, 247, 0.7);
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes scaleIn {
@@ -88,11 +95,47 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(236, 72, 153, 0.7);
 }
+
 @keyframes float {
-    0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-    50% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-20px) translateX(10px);
+        opacity: 0.6;
+    }
 }
 
 .animate-float {
     animation: float 3s ease-in-out infinite;
 }
+
+.shimmer {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+
