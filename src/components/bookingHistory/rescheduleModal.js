@@ -234,7 +234,7 @@ const RescheduleModal = () => {
                                         setError("");
                                     }}
                                     min={new Date().toISOString().split("T")[0]}
-                                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/30 transition-all cursor-pointer"
+                                    className="w-full  px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/30 transition-all cursor-pointer"
                                 />
                             </div>
 
