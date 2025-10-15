@@ -10,7 +10,7 @@ export const links = [
 ];
 
 import {
-    Activity,
+    Activity, ArrowLeft,
     Award, BarChart3,
     BookOpen, Brush, Calendar, Clock, Crown,
     Facebook, Gift,
@@ -286,6 +286,6 @@ export const menuItems = [
     {id: 'customers', label: 'Customers', icon: Users},
     {id: 'services', label: 'Services', icon: Package},
     {id: 'analytics', label: 'Analytics', icon: Activity},
-    {id:'employees', label: 'Employees', icon: User},
+    {id: 'employees', label: 'Employees', icon: User},
 ];
 

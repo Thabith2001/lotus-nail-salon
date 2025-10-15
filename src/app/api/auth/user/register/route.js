@@ -17,19 +17,23 @@ export async function POST(req) {
         }
 
         const existingUser = await User.findOne({
-            $or: [{ email }, { phone }],
+            $or: [{email}, {phone}],
         });
         if (existingUser) {
             return NextResponse.json(
-                { message: "User already exists" },
-                { status: 400 }
+                {message: "User already exists"},
+                {status: 400}
             );
         }
 
+        const contact = phone.replace(/\s+/g, '');
+        const user = await User.create({username, email, contact, password});
 
-        const user = await User.create({username, email, phone, password});
-
-        return NextResponse.json({success: true, user},{status:201});
+        return NextResponse.json({
+            success: true,
+            message: "successfully registered",
+            user
+        }, {status: 201});
     } catch (err) {
         return NextResponse.json({success: false, error: err.message}, {status: 400});
     }

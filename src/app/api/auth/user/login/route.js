@@ -1,32 +1,35 @@
-
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "@/model/userModel";
 import {connectDB} from "@/lib/mongoose";
 
-
 export async function POST(req) {
     try {
         await connectDB();
 
-        const { identifier, password } = await req.json();
+        const {identifier, password} = await req.json();
 
         if (!identifier || !password) {
             return new Response(
-                JSON.stringify({ message: "Missing fields" }),
-                { status: 400 }
+                JSON.stringify({message: "Missing fields"}),
+                {status: 400}
             );
         }
 
-
+        // Clean and trim spaces
+        const cleanedIdentifier = identifier.trim().replace(/\s+/g, "");
+        // Find user by email or phone (cleaned)
         const user = await User.findOne({
-            $or: [{ email: identifier }, { phone: identifier }],
+            $or: [
+                {email: cleanedIdentifier.toLowerCase()},
+                {phone: cleanedIdentifier}
+            ],
         }).select("+password");
 
         if (!user) {
             return new Response(
-                JSON.stringify({ message: "User not found" }),
-                { status: 404 }
+                JSON.stringify({message: "User not found"}),
+                {status: 404}
             );
         }
 
@@ -34,18 +37,19 @@ export async function POST(req) {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return new Response(
-                JSON.stringify({ message: "Invalid credentials" }),
-                { status: 401 }
+                JSON.stringify({message: "Invalid credentials"}),
+                {status: 401}
             );
         }
 
         // Create JWT
         const token = jwt.sign(
-            { id: user._id, role: user.role },
+            {id: user._id, role: user.role},
             process.env.JWT_SECRET,
-            { expiresIn: "7d" }
+            {expiresIn: "7d"}
         );
 
+        // Remove password before sending response
         user.password = undefined;
 
         return new Response(
@@ -54,13 +58,13 @@ export async function POST(req) {
                 token,
                 user,
             }),
-            { status: 200 }
+            {status: 200}
         );
     } catch (err) {
         console.error("signin error:", err);
         return new Response(
-            JSON.stringify({ message: "Server error", error: err.message }),
-            { status: 500 }
+            JSON.stringify({message: "Server error", error: err.message}),
+            {status: 500}
         );
     }
 }

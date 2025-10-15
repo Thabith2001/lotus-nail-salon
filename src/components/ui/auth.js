@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {
     X,
     ArrowLeft,
@@ -18,8 +18,8 @@ import {
     AlertCircle
 } from "lucide-react";
 import axios from "axios";
-import { useAuth } from "@/context/authContext";
-import { useAuthModal } from "@/context/authModelContext";
+import {useAuth} from "@/context/authContext";
+import {useAuthModal} from "@/context/authModelContext";
 import toast from "react-hot-toast";
 import {useSparkles} from "@/hooks/useSparkles";
 
@@ -38,8 +38,8 @@ const Auth = () => {
     const [inputFocus, setInputFocus] = useState({});
     const [passwordStrength, setPasswordStrength] = useState(0);
 
-    const { login } = useAuth();
-    const { closeAuth } = useAuthModal();
+    const {login} = useAuth();
+    const {closeAuth} = useAuthModal();
 
     useEffect(() => {
         setIsVisible(true);
@@ -55,62 +55,102 @@ const Auth = () => {
         }
     }, [form.password, view]);
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => setForm({...form, [e.target.name]: e.target.value});
     const closeModal = () => closeAuth();
     const sparkles = useSparkles(20);
 
     const handleInputFocus = (field, focused) => {
-        setInputFocus(prev => ({ ...prev, [field]: focused }));
+        setInputFocus(prev => ({...prev, [field]: focused}));
     };
 
     const getPasswordStrengthColor = () => {
         switch (passwordStrength) {
             case 0:
-            case 1: return 'bg-red-400';
-            case 2: return 'bg-yellow-400';
-            case 3: return 'bg-blue-400';
-            case 4: return 'bg-green-400';
-            default: return 'bg-gray-400';
+            case 1:
+                return 'bg-red-400';
+            case 2:
+                return 'bg-yellow-400';
+            case 3:
+                return 'bg-blue-400';
+            case 4:
+                return 'bg-green-400';
+            default:
+                return 'bg-gray-400';
         }
     };
 
     const getPasswordStrengthText = () => {
         switch (passwordStrength) {
             case 0:
-            case 1: return 'Weak';
-            case 2: return 'Fair';
-            case 3: return 'Good';
-            case 4: return 'Strong';
-            default: return '';
+            case 1:
+                return 'Weak';
+            case 2:
+                return 'Fair';
+            case 3:
+                return 'Good';
+            case 4:
+                return 'Strong';
+            default:
+                return '';
         }
     };
 
     const getViewIcon = () => {
         switch (view) {
-            case "signin": return <LogIn className="w-8 h-8 text-white" />;
-            case "signup": return <UserPlus className="w-8 h-8 text-white" />;
-            case "forgot": return <KeyRound className="w-8 h-8 text-white" />;
-            default: return <LogIn className="w-8 h-8 text-white" />;
+            case "signin":
+                return <LogIn className="w-8 h-8 text-white"/>;
+            case "signup":
+                return <UserPlus className="w-8 h-8 text-white"/>;
+            case "forgot":
+                return <KeyRound className="w-8 h-8 text-white"/>;
+            default:
+                return <LogIn className="w-8 h-8 text-white"/>;
         }
     };
 
     const getViewTitle = () => {
         switch (view) {
-            case "signin": return "Welcome Back";
-            case "signup": return "Join Lotus Spa";
-            case "forgot": return "Reset Password";
-            default: return "Welcome";
+            case "signin":
+                return "Welcome Back";
+            case "signup":
+                return "Join Lotus Spa";
+            case "forgot":
+                return "Reset Password";
+            default:
+                return "Welcome";
         }
     };
 
     const getViewSubtitle = () => {
         switch (view) {
-            case "signin": return "Sign in to your account";
-            case "signup": return "Create your luxury account";
-            case "forgot": return "Recover your account";
-            default: return "";
+            case "signin":
+                return "Sign in to your account";
+            case "signup":
+                return "Create your luxury account";
+            case "forgot":
+                return "Recover your account";
+            default:
+                return "";
         }
     };
+
+
+    const normalizePhone = (phone) => {
+        let cleaned = phone.replace(/\s+/g, '').replace(/-/g, '');
+
+        if (cleaned.startsWith('00')) {
+            cleaned = cleaned.slice(2);
+        }
+
+        if (cleaned.startsWith('0')) {
+            cleaned = '+94' + cleaned.slice(1);
+        } else if (cleaned.startsWith('94')) {
+            cleaned = '+' + cleaned;
+        }
+
+        return cleaned;
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -141,15 +181,20 @@ const Auth = () => {
         try {
             let res;
             if (view === "signup") {
+
+                let phone = form.phone.trim();
+                    phone = normalizePhone(phone);
                 res = await axios.post("/api/auth/user/register", {
                     username: form.name,
                     email: form.email,
-                    phone: form.phone,
+                    phone: phone,
                     password: form.password,
                 });
             } else if (view === "signin") {
+                let identifier = form.identifier.trim();
+                    identifier = normalizePhone(identifier);
                 res = await axios.post("/api/auth/user/login", {
-                    identifier: form.identifier,
+                    identifier: identifier,
                     password: form.password,
                 });
             } else if (view === "forgot") {
@@ -162,7 +207,7 @@ const Auth = () => {
             }
 
             if (view === "signin" || view === "signup") {
-                const { user, token, message } = res.data;
+                const {user, token, message} = res.data;
                 login(user, token);
                 toast.success(message, successToast);
                 closeAuth();
@@ -218,25 +263,28 @@ const Auth = () => {
                         onClick={closeModal}
                         className="absolute top-6 right-6 w-10 h-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all duration-300 z-10"
                     >
-                        <X className="w-5 h-5" />
+                        <X className="w-5 h-5"/>
                     </button>
 
                     {/* Header */}
                     <div className="text-center p-5 pb-2">
                         {/* Icon */}
-                        <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <div
+                            className="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
                             {getViewIcon()}
                         </div>
 
                         {/* Badge */}
-                        <div className="inline-flex items-center px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full">
-                            <Heart className="w-4 h-4 text-pink-400 mr-2" />
+                        <div
+                            className="inline-flex items-center px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full">
+                            <Heart className="w-4 h-4 text-pink-400 mr-2"/>
                             <span className="text-sm font-medium text-white/90 tracking-wide">LOTUS SALON</span>
                         </div>
 
                         {/* Title */}
                         <h1 className="text-2xl md:text-3xl font-black leading-tight mb-2">
-                            <span className="bg-gradient-to-r from-white via-pink-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
+                            <span
+                                className="bg-gradient-to-r from-white via-pink-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
                                 {getViewTitle()}
                             </span>
                         </h1>
@@ -256,10 +304,11 @@ const Auth = () => {
                                 <div>
                                     <label className="block text-white/80 text-sm font-medium mb-2">Full Name *</label>
                                     <div className="relative">
-                                        <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                                            inputFocus.name ? 'text-pink-400' : 'text-white/50'
-                                        }`}>
-                                            <User className="w-5 h-5" />
+                                        <div
+                                            className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                                                inputFocus.name ? 'text-pink-400' : 'text-white/50'
+                                            }`}>
+                                            <User className="w-5 h-5"/>
                                         </div>
                                         <input
                                             type="text"
@@ -279,7 +328,7 @@ const Auth = () => {
                                         />
                                         {form.name && !loading && (
                                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                                <CheckCircle className="w-4 h-4 text-green-400" />
+                                                <CheckCircle className="w-4 h-4 text-green-400"/>
                                             </div>
                                         )}
                                     </div>
@@ -289,10 +338,11 @@ const Auth = () => {
                                 <div>
                                     <label className="block text-white/80 text-sm font-medium mb-2">Email *</label>
                                     <div className="relative">
-                                        <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                                            inputFocus.email ? 'text-pink-400' : 'text-white/50'
-                                        }`}>
-                                            <Mail className="w-5 h-5" />
+                                        <div
+                                            className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                                                inputFocus.email ? 'text-pink-400' : 'text-white/50'
+                                            }`}>
+                                            <Mail className="w-5 h-5"/>
                                         </div>
                                         <input
                                             type="email"
@@ -317,10 +367,11 @@ const Auth = () => {
                                 <div>
                                     <label className="block text-white/80 text-sm font-medium mb-2">Phone *</label>
                                     <div className="relative">
-                                        <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                                            inputFocus.phone ? 'text-pink-400' : 'text-white/50'
-                                        }`}>
-                                            <Phone className="w-5 h-5" />
+                                        <div
+                                            className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                                                inputFocus.phone ? 'text-pink-400' : 'text-white/50'
+                                            }`}>
+                                            <Phone className="w-5 h-5"/>
                                         </div>
                                         <input
                                             type="text"
@@ -345,10 +396,11 @@ const Auth = () => {
                                 <div>
                                     <label className="block text-white/80 text-sm font-medium mb-2">Password *</label>
                                     <div className="relative">
-                                        <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                                            inputFocus.password ? 'text-pink-400' : 'text-white/50'
-                                        }`}>
-                                            <Lock className="w-5 h-5" />
+                                        <div
+                                            className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                                                inputFocus.password ? 'text-pink-400' : 'text-white/50'
+                                            }`}>
+                                            <Lock className="w-5 h-5"/>
                                         </div>
                                         <input
                                             type={showPassword ? "text" : "password"}
@@ -372,7 +424,7 @@ const Auth = () => {
                                             className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors duration-300"
                                             disabled={loading}
                                         >
-                                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                            {showPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                                         </button>
                                     </div>
 
@@ -392,7 +444,7 @@ const Auth = () => {
                                             <div className="w-full bg-white/10 rounded-full h-2">
                                                 <div
                                                     className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
-                                                    style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                                                    style={{width: `${(passwordStrength / 4) * 100}%`}}
                                                 />
                                             </div>
                                         </div>
@@ -406,12 +458,14 @@ const Auth = () => {
                             <>
                                 {/* Email or Phone */}
                                 <div>
-                                    <label className="block text-white/80 text-sm font-medium mb-2">Email or Phone</label>
+                                    <label className="block text-white/80 text-sm font-medium mb-2">Email or
+                                        Phone</label>
                                     <div className="relative">
-                                        <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                                            inputFocus.identifier ? 'text-pink-400' : 'text-white/50'
-                                        }`}>
-                                            <Mail className="w-5 h-5" />
+                                        <div
+                                            className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                                                inputFocus.identifier ? 'text-pink-400' : 'text-white/50'
+                                            }`}>
+                                            <Mail className="w-5 h-5"/>
                                         </div>
                                         <input
                                             type="text"
@@ -436,10 +490,11 @@ const Auth = () => {
                                 <div>
                                     <label className="block text-white/80 text-sm font-medium mb-2">Password</label>
                                     <div className="relative">
-                                        <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                                            inputFocus.password ? 'text-pink-400' : 'text-white/50'
-                                        }`}>
-                                            <Lock className="w-5 h-5" />
+                                        <div
+                                            className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                                                inputFocus.password ? 'text-pink-400' : 'text-white/50'
+                                            }`}>
+                                            <Lock className="w-5 h-5"/>
                                         </div>
                                         <input
                                             type={showPassword ? "text" : "password"}
@@ -463,7 +518,7 @@ const Auth = () => {
                                             className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors duration-300"
                                             disabled={loading}
                                         >
-                                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                            {showPassword ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                                         </button>
                                     </div>
                                 </div>
@@ -475,10 +530,11 @@ const Auth = () => {
                             <div>
                                 <label className="block text-white/80 text-sm font-medium mb-2">Email or Phone</label>
                                 <div className="relative">
-                                    <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                                        inputFocus.identifier ? 'text-pink-400' : 'text-white/50'
-                                    }`}>
-                                        <Mail className="w-5 h-5" />
+                                    <div
+                                        className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                                            inputFocus.identifier ? 'text-pink-400' : 'text-white/50'
+                                        }`}>
+                                        <Mail className="w-5 h-5"/>
                                     </div>
                                     <input
                                         type="text"
@@ -515,14 +571,15 @@ const Auth = () => {
                         >
                             {loading ? (
                                 <>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <div
+                                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                                     <span>Processing...</span>
                                 </>
                             ) : (
                                 <>
-                                    {view === "signin" && <LogIn className="w-5 h-5" />}
-                                    {view === "signup" && <UserPlus className="w-5 h-5" />}
-                                    {view === "forgot" && <KeyRound className="w-5 h-5" />}
+                                    {view === "signin" && <LogIn className="w-5 h-5"/>}
+                                    {view === "signup" && <UserPlus className="w-5 h-5"/>}
+                                    {view === "forgot" && <KeyRound className="w-5 h-5"/>}
                                     <span>
                                         {view === "signin" ? "Sign In" :
                                             view === "signup" ? "Sign Up" :
@@ -536,8 +593,9 @@ const Auth = () => {
                     {/* Footer */}
                     <div className="px-8 py-1">
                         {/* Security Badge */}
-                        <div className="flex items-center justify-center space-x-2 mb-2 p-3 bg-white/5 rounded-xl border border-white/10">
-                            <Shield className="w-4 h-4 text-green-400" />
+                        <div
+                            className="flex items-center justify-center space-x-2 mb-2 p-3 bg-white/5 rounded-xl border border-white/10">
+                            <Shield className="w-4 h-4 text-green-400"/>
                             <span className="text-white/70 text-sm">Secure & Encrypted</span>
                         </div>
 
@@ -582,7 +640,7 @@ const Auth = () => {
                                     onClick={() => setView("signin")}
                                     className="flex items-center justify-center space-x-2 text-white/70 hover:text-white/90 transition-colors duration-300 mx-auto"
                                 >
-                                    <ArrowLeft className="w-4 h-4" />
+                                    <ArrowLeft className="w-4 h-4"/>
                                     <span>Back to Sign In</span>
                                 </button>
                             )}

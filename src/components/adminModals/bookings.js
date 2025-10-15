@@ -3,10 +3,14 @@ import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {adminContext} from '@/app/admin/page';
 import {Download, Plus, Edit, Trash2} from 'lucide-react';
 import {HandleDelete} from '@/components/adminModals/deleteToast'
+import {useRouter} from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 
 const Bookings = () => {
-    const {setActiveTab, searchTerm, mergedData} = useContext(adminContext);
+    const {setActiveTab, searchTerm, mergedData, fetchBooking} = useContext(adminContext);
+
 
     const handleExport = () => {
         const blob = new Blob([JSON.stringify(mergedData, null, 2)], {type: 'application/json'});
@@ -17,7 +21,6 @@ const Bookings = () => {
         a.click();
         URL.revokeObjectURL(url);
     };
-
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -31,9 +34,28 @@ const Bookings = () => {
     };
 
     // Update booking status
-    const updateBookingStatus = (id, status) => {
-        console.log(`Update booking ${id} to ${status}`);
-        // TODO: send PATCH request to API here
+    const updateBookingStatus = async (id, status) => {
+        try {
+
+            const resp = await axios.patch(`/api/bookings/${id}`, {status});
+            if (resp.status === 200) {
+                fetchBooking();
+                toast.success("Booking status updated successfully!", {
+                    style: {
+                        background: "#10b981", color: "#fff"
+                    }
+                })
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    };
+
+    const handleDeleteClick = async (id) => {
+        const resp = await HandleDelete(id);
+        if (resp === "success") {
+            fetchBooking();
+        }
     };
 
     // Filter bookings by search term
@@ -45,6 +67,7 @@ const Bookings = () => {
                 b.service?.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [searchTerm, mergedData]);
+
     return (
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 overflow-x-auto">
             {/* Header */}
@@ -103,10 +126,13 @@ const Bookings = () => {
                                             booking.status
                                         )}`}
                                     >
-                                        <option value="pending">Pending</option>
-                                        <option value="confirmed">Confirmed</option>
-                                        <option value="cancelled">Cancelled</option>
-                                        <option value="completed">Completed</option>
+                                        {["pending", "confirmed", "cancelled", "completed"].map((status) => {
+                                            return (
+                                                <option key={status} value={status}>
+                                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                </option>
+                                            );
+                                        })}
                                     </select>
                                 </td>
                                 <td className="py-4 px-4 font-semibold text-white/90">
@@ -115,14 +141,7 @@ const Bookings = () => {
                                 <td className="py-4 px-4 text-center">
                                     <div className="flex items-center justify-center gap-2">
                                         <button
-                                            onClick={() => {
-                                            }}
-                                            className="p-2 hover:bg-green-500/20 rounded-lg transition-colors text-green-400"
-                                        >
-                                            <Edit className="w-4 h-4"/>
-                                        </button>
-                                        <button
-                                            onClick={() => HandleDelete(booking._id)}
+                                            onClick={() => handleDeleteClick(booking._id)}
                                             className="p-2 hover:bg-red-500/20 rounded-lg transition-colors text-red-400"
                                         >
                                             <Trash2 className="w-4 h-4"/>

@@ -27,6 +27,7 @@ const OverView = () => {
                 status: b?.status || "N/A",
                 amount: Number(b?.payment?.amount) || 0,
                 membership: b?.membership || null,
+                bookingDate: b?.bookingDate || "-",
             }));
     }, [mergedData]);
 
@@ -43,36 +44,55 @@ const OverView = () => {
     //  Filter bookings by selected period
     const filterByPeriod = (bookings) => {
         const now = new Date();
+
         return bookings.filter((b) => {
             const bookingDate = new Date(b.date);
+
             if (isNaN(bookingDate)) return false;
 
-            const diffDays = Math.floor(
-                (now - bookingDate) / (1000 * 60 * 60 * 24)
+            // Normalize times (ignore time part)
+            const bookingDay = new Date(
+                bookingDate.getFullYear(),
+                bookingDate.getMonth(),
+                bookingDate.getDate()
             );
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const diffTime = today - bookingDay;
+            const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
             switch (selectedPeriod?.toLowerCase()) {
                 case "today":
-                    return bookingDate.toDateString() === now.toDateString();
-                case "this week":
-                    return diffDays <= 7;
+                    return bookingDay.getTime() === today.getTime();
+
+                case "this week": {
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 7);
+                    return bookingDay >= startOfWeek && bookingDay < endOfWeek;
+                }
+
                 case "this month":
-                    return diffDays <= 30;
+                    return (
+                        bookingDate.getMonth() === now.getMonth() &&
+                        bookingDate.getFullYear() === now.getFullYear()
+                    );
+
                 case "this year":
-                    return diffDays <= 365;
+                    return bookingDate.getFullYear() === now.getFullYear();
+
                 default:
                     return true;
             }
         });
     };
-
-    //  Final filtered + sorted bookings
     const finalFilteredBookings = useMemo(() => {
         const bookings = filterByPeriod(filteredBySearch);
         return bookings.sort((a, b) => {
             const dateA = new Date(`${a.date} ${a.time}`);
             const dateB = new Date(`${b.date} ${b.time}`);
-            return dateB - dateA;
+            return dateA.getTime() - dateB.getTime();
         });
     }, [filteredBySearch, selectedPeriod]);
 

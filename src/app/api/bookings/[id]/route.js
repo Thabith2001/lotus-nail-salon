@@ -31,7 +31,9 @@ export async function PATCH(req, {params}) {
 export async function DELETE(req, {params}) {
     await connectDB();
     try {
-        const deletedBooking = await Booking.findByIdAndDelete(params.id);
+
+        const {id} = await params;
+        const deletedBooking = await Booking.findByIdAndDelete(id);
         if (!deletedBooking) return NextResponse.json({error: "Booking not found"}, {status: 404});
         return NextResponse.json({message: "Booking deleted"}, {status: 200});
     } catch (error) {

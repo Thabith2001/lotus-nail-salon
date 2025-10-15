@@ -1,6 +1,6 @@
 'use client'
 import React, {useState, useEffect, createContext} from 'react';
-import {Menu, X, Star, Bell, Search, LogOut, Calendar, Users} from 'lucide-react';
+import {Menu, X, Star, Bell, Search, LogOut, ArrowLeft} from 'lucide-react';
 import OverView from "@/components/adminModals/overView";
 import {useRouter} from "next/navigation";
 import {useAuth} from "@/context/authContext";
@@ -62,65 +62,62 @@ const AdminDashBoard = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const fetchBooking = async () => {
+        try {
+            if (!bookingData || bookingData.length === 0) return;
+
+            const allBookings = [];
+
+            for (const user of bookingData) {
+                if (!user._id) continue;
+
+                const bookingRes = await axios.get(`/api/bookings?userId=${user._id}`);
+                const bookings = bookingRes.data.bookings || [];
+
+                //  For each booking, fetch payment + membership details (if any)
+                const bookingsWithDetails = await Promise.all(
+                    bookings.map(async (b) => {
+                        let payment = null;
+                        let membership = null;
+
+                        try {
+                            if (b.paymentId) {
+                                const payRes = await axios.get(`/api/payments/${b.paymentId}`);
+                                payment = payRes.data.payment || null;
+                            }
+                        } catch (err) {
+                            console.error(` Payment fetch failed for booking ${b._id}:`, err);
+                        }
+
+                        try {
+                            if (b.userMembershipId) {
+                                const memRes = await axios.get(
+                                    `/api/user-membership/${b.userMembershipId}`
+                                );
+                                membership = memRes.data.membership || null;
+                            }
+                        } catch (err) {
+                            console.error(` Membership fetch failed for booking ${b._id}:`, err);
+                        }
+
+                        // Merge all data together
+                        return {...b, user, payment, membership};
+                    })
+                );
+
+                allBookings.push(...bookingsWithDetails);
+            }
+
+            console.log("All bookings:", allBookings);
+            setMergedData(allBookings);
+        } catch (error) {
+            console.error("Error fetching booking history:", error);
+        }
+    };
 
     useEffect(() => {
-        const fetchBooking = async () => {
-            try {
-                if (!bookingData || bookingData.length === 0) return;
-
-                const allBookings = [];
-
-                for (const user of bookingData) {
-                    if (!user._id) continue;
-
-
-                    const bookingRes = await axios.get(`/api/bookings?userId=${user._id}`);
-                    const bookings = bookingRes.data.bookings || [];
-
-                    // 📦 For each booking, fetch payment + membership details (if any)
-                    const bookingsWithDetails = await Promise.all(
-                        bookings.map(async (b) => {
-                            let payment = null;
-                            let membership = null;
-
-                            try {
-                                if (b.paymentId) {
-                                    const payRes = await axios.get(`/api/payments/${b.paymentId}`);
-                                    payment = payRes.data.payment || null;
-                                }
-                            } catch (err) {
-                                console.error(` Payment fetch failed for booking ${b._id}:`, err);
-                            }
-
-                            try {
-                                if (b.userMembershipId) {
-                                    const memRes = await axios.get(
-                                        `/api/user-membership/${b.userMembershipId}`
-                                    );
-                                    membership = memRes.data.membership || null;
-                                }
-                            } catch (err) {
-                                console.error(` Membership fetch failed for booking ${b._id}:`, err);
-                            }
-
-                            // Merge all data together
-                            return { ...b, user, payment, membership };
-                        })
-                    );
-
-                    allBookings.push(...bookingsWithDetails);
-                }
-
-                console.log("All bookings:", allBookings);
-                setMergedData(allBookings);
-            } catch (error) {
-                console.error("Error fetching booking history:", error);
-            }
-        };
-
         fetchBooking();
     }, [bookingData]);
-
 
 
     const handleLogout = () => {
@@ -184,6 +181,15 @@ const AdminDashBoard = () => {
             </nav>
 
             {sidebarOpen && (<div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
+
+                <button onClick={() => {
+                    router.back()
+                }}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-gray-100">
+                    <ArrowLeft className="w-5 h-5"/>
+                    <span className="font-medium">Back</span>
+                </button>
+
                 <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-red-400">
@@ -259,7 +265,7 @@ const AdminDashBoard = () => {
 
             {/* Main Content Area */}
             <main className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                <adminContext.Provider value={{setActiveTab, searchTerm, mergedData, bookingData, selectedPeriod}}>
+                <adminContext.Provider value={{setActiveTab, searchTerm, mergedData, bookingData, selectedPeriod,fetchBooking}}>
                     {activeTab === 'overview' && <OverView/>}
                     {activeTab === 'bookings' && <Bookings/>}
                     {activeTab === 'analytics' && <Analytics/>}
