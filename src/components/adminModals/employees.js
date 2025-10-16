@@ -8,7 +8,6 @@ import {
     Mail,
     Phone,
     User,
-    Calendar,
     CheckCircle,
     Clock,
     XCircle,
@@ -16,178 +15,185 @@ import {
     Trash2,
     MoreVertical,
     Lock,
-    Dot, Users, Activity, Shield, TrendingUp, Sparkles
+    Shield,
+    TrendingUp,
+    Users,
+    Activity,
+    Briefcase,
+    Calendar,
+    DollarSign,
+    Award,
+    Target,
+    Star, Sparkles
 } from "lucide-react";
-import axios from "axios";
-import {adminContext} from "@/app/admin/page";
-import toast from "react-hot-toast";
 
+// Mock adminContext
+const AdminContext = React.createContext({ searchTerm: '' });
 
-const Customer = () => {
-    const {searchTerm} = useContext(adminContext);
-    const [customers, setCustomers] = useState([]);
+const Employee = () => {
+    const { searchTerm } = useContext(AdminContext);
+    const [employees, setEmployees] = useState([
+        {
+            id: '1',
+            username: 'Robert Anderson',
+            email: 'robert.a@company.com',
+            phone: '+1234567890',
+            status: 'active',
+            position: 'Senior Developer',
+            department: 'Engineering',
+            joinDate: '2023-01-15',
+            salary: '$95,000',
+            performance: 'excellent'
+        },
+        {
+            id: '2',
+            username: 'Emily Rodriguez',
+            email: 'emily.r@company.com',
+            phone: '+0987654321',
+            status: 'active',
+            position: 'Product Manager',
+            department: 'Product',
+            joinDate: '2023-03-20',
+            salary: '$105,000',
+            performance: 'excellent'
+        },
+        {
+            id: '3',
+            username: 'Michael Chen',
+            email: 'michael.c@company.com',
+            phone: '+1122334455',
+            status: 'active',
+            position: 'UX Designer',
+            department: 'Design',
+            joinDate: '2023-06-10',
+            salary: '$85,000',
+            performance: 'good'
+        },
+        {
+            id: '4',
+            username: 'Sarah Thompson',
+            email: 'sarah.t@company.com',
+            phone: '+5566778899',
+            status: 'active',
+            position: 'Marketing Lead',
+            department: 'Marketing',
+            joinDate: '2023-08-05',
+            salary: '$90,000',
+            performance: 'excellent'
+        }
+    ]);
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [editingCustomer, setEditingCustomer] = useState(null);
-    const [deletingCustomer, setDeletingCustomer] = useState(null);
+    const [editingEmployee, setEditingEmployee] = useState(null);
+    const [deletingEmployee, setDeletingEmployee] = useState(null);
     const [activeMenu, setActiveMenu] = useState(null);
-    const [passwordField, setPasswordField] = useState(false)
+    const [passwordField, setPasswordField] = useState(false);
     const [formData, setFormData] = useState({
-        username: "", email: "", phone: "", password: "",
+        username: "",
+        email: "",
+        phone: "",
+        password: "",
+        position: "",
+        department: "",
+        salary: ""
     });
-    const fetchCustomers = async () => {
-        try {
-            const resp = await axios.get('/api/auth/user');
-            const usersArray = resp.data?.users || [];
 
-            const nonAdmins = usersArray.filter(user => user.role !== 'admin');
+    // Filtered employees based on search
+    const filteredEmployees = useMemo(() => {
+        if (!searchTerm) return employees;
+        return employees.filter(e =>
+            e.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.department.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [employees, searchTerm]);
 
-            const mappedUsers = nonAdmins.map(user => ({
-                id: user._id,
-                username: user.username || "Unknown",
-                email: user.email || "N/A",
-                phone: user.phone || "N/A",
-                status: "active",
-            }));
-            setCustomers(mappedUsers);
-
-        } catch (err) {
-            console.error('Error fetching customers:', err);
-        }
-    };
-
-    useEffect(() => {
-        fetchCustomers();
-    }, []);
-
-
-    // Filtered customers based on search
-    const filteredCustomers = useMemo(() => {
-        if (!searchTerm) return customers;
-        return customers.filter(c => c.username.toLowerCase().includes(searchTerm.toLowerCase()) || c.email.toLowerCase().includes(searchTerm.toLowerCase()) || c.phone.includes(searchTerm));
-    }, [customers, searchTerm]);
-
-    // Export customers as JSON
+    // Export employees as JSON
     const handleExport = () => {
-        const blob = new Blob([JSON.stringify(customers, null, 2)], {type: 'application/json'});
+        const blob = new Blob([JSON.stringify(employees, null, 2)], {type: 'application/json'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `customers_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `employees_${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
     };
 
     // Modals
     const openAddModal = () => {
-        setEditingCustomer(null);
-        setFormData({username: '', email: '', phone: '', password: ''});
+        setEditingEmployee(null);
+        setFormData({username: '', email: '', phone: '', password: '', position: '', department: '', salary: ''});
         setIsOpen(true);
         setActiveMenu(null);
-        setPasswordField(true)
+        setPasswordField(true);
     };
 
-    const openEditModal = (customer) => {
-        setEditingCustomer(customer);
+    const openEditModal = (employee) => {
+        setEditingEmployee(employee);
         setFormData({
-            username: customer.username || "",
-            email: customer.email || "",
-            phone: customer.phone || "",
+            username: employee.username || "",
+            email: employee.email || "",
+            phone: employee.phone || "",
+            position: employee.position || "",
+            department: employee.department || "",
+            salary: employee.salary || ""
         });
         setIsOpen(true);
         setActiveMenu(null);
-        setPasswordField(false)
+        setPasswordField(false);
     };
 
-
-    const openDeleteModal = (customer) => {
-        setDeletingCustomer(customer);
+    const openDeleteModal = (employee) => {
+        setDeletingEmployee(employee);
         setIsDeleteOpen(true);
         setActiveMenu(null);
     };
 
-    const handleSubmit = async () => {
-        try {
-            if (editingCustomer) {
-                console.log('Updating customer:', editingCustomer.id, formData);
-                const resp = await axios.patch(`/api/auth/user/${editingCustomer.id}`, formData);
-                if (resp.status === 200) {
-                    toast.success(" successfully updated!", {
-                        style: {
-                            background: "#10b981", color: "#fff"
-                        }
-                    })
-                    await fetchCustomers();
-                }
-            } else {
-                console.log('Adding new customer:', formData);
-                const resp = await axios.post("/api/auth/user/register", {
-                    username: formData.username,
-                    email: formData.email,
-                    phone: formData.phone,
-                    password: formData.password,
-                });
-                if (resp.status === 201) {
-                    toast.success("successfully Added!", {
-                        style: {
-                            background: "#10b981", color: "#fff"
-                        }
-                    })
-                    await fetchCustomers();
-                }
-            }
-        } catch (err) {
-            console.error('Error submitting form:', err);
+    const handleSubmit = () => {
+        if (editingEmployee) {
+            console.log('Updating employee:', editingEmployee.id, formData);
+        } else {
+            console.log('Adding new employee:', formData);
         }
-
         setIsOpen(false);
-        setEditingCustomer(null);
-        setFormData({username: '', email: '', phone: '', password: ''});
+        setEditingEmployee(null);
+        setFormData({username: '', email: '', phone: '', password: '', position: '', department: '', salary: ''});
     };
 
-    const handleDelete = async () => {
-        console.log('Deleting customer:', deletingCustomer.id);
-        const resp = await axios.delete(`/api/auth/user/${deletingCustomer.id}`)
-        if (resp.status === 200) {
-            toast.success("successfully Deleted!", {
-                style: {
-                    background: "#10b981", color: "#fff"
-                }
-            })
-            await fetchCustomers();
-        }
+    const handleDelete = () => {
+        console.log('Deleting employee:', deletingEmployee.id);
         setIsDeleteOpen(false);
-        setDeletingCustomer(null);
+        setDeletingEmployee(null);
     };
 
-    const getStatusIcon = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'active':
-                return <Dot className="w-10 h-10 text-emerald-400"/>;
-            case 'pending':
-                return <Clock className="w-4 h-4 text-amber-400"/>;
-            case 'inactive':
-                return <XCircle className="w-4 h-4 text-red-400"/>;
-            default:
-                return <Clock className="w-4 h-4 text-gray-400"/>;
-        }
-    };
-
-    const getStatusColor = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'active':
+    const getPerformanceBadge = (performance) => {
+        switch(performance) {
+            case 'excellent':
                 return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-            case 'pending':
+            case 'good':
+                return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+            case 'average':
                 return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-            case 'inactive':
-                return 'bg-red-500/20 text-red-300 border-red-500/30';
             default:
                 return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
         }
     };
 
-    return (<>
-        <div className="min-h-screen backdrop-blur-xl bg-white/5  border border-white/10 rounded-2xl p-4 md:p-8">
+    const getDepartmentColor = (department) => {
+        const colors = {
+            'Engineering': 'from-violet-500 to-purple-600',
+            'Product': 'from-fuchsia-500 to-pink-600',
+            'Design': 'from-cyan-500 to-blue-600',
+            'Marketing': 'from-orange-500 to-red-600',
+            'Sales': 'from-emerald-500 to-teal-600',
+            'HR': 'from-rose-500 to-pink-600'
+        };
+        return colors[department] || 'from-gray-500 to-gray-600';
+    };
+
+    return (
+        <div className="min-h-screen backdrop-blur-2xl bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8">
             <div className="max-w-[1600px] mx-auto space-y-6">
                 {/* Modern Header */}
                 <div className="flex flex-col gap-6">
@@ -195,11 +201,11 @@ const Customer = () => {
                         <div>
                             <div className="flex items-center gap-2 mb-2">
                                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                                    Customer Management
+                                    Employees Management
                                 </h1>
                                 <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
                             </div>
-                            <p className="text-white/60 text-sm">Manage your customer base efficiently</p>
+                            <p className="text-white/50 text-sm">Manage your team members and their information</p>
                         </div>
                         <div className="flex gap-3">
                             <button
@@ -219,7 +225,7 @@ const Customer = () => {
                                 <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="relative flex items-center gap-2">
                                     <UserPlus className="w-5 h-5"/>
-                                    <span className="font-semibold">Add Customer</span>
+                                    <span className="font-semibold">Add Employee</span>
                                 </div>
                             </button>
                         </div>
@@ -237,8 +243,8 @@ const Customer = () => {
                                     <TrendingUp className="w-5 h-5 text-emerald-400"/>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-white/50 text-sm font-medium">Total Customers</p>
-                                    <p className="text-3xl font-bold text-white">{customers.length}</p>
+                                    <p className="text-white/50 text-sm font-medium">Total Employees</p>
+                                    <p className="text-3xl font-bold text-white">{employees.length}</p>
                                 </div>
                             </div>
                         </div>
@@ -251,12 +257,28 @@ const Customer = () => {
                                         <Activity className="w-6 h-6"/>
                                     </div>
                                     <div className="flex items-center gap-1 text-emerald-400 text-sm">
-                                        <span>+12%</span>
+                                        <span>100%</span>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-white/50 text-sm font-medium">Active Users</p>
-                                    <p className="text-3xl font-bold text-white">{customers.filter(c => c.status === 'active').length}</p>
+                                    <p className="text-white/50 text-sm font-medium">Active</p>
+                                    <p className="text-3xl font-bold text-white">{employees.filter(e => e.status === 'active').length}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="relative">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 flex items-center justify-center">
+                                        <Briefcase className="w-6 h-6"/>
+                                    </div>
+                                    <Award className="w-5 h-5 text-fuchsia-400"/>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-white/50 text-sm font-medium">Departments</p>
+                                    <p className="text-3xl font-bold text-white">6</p>
                                 </div>
                             </div>
                         </div>
@@ -266,25 +288,25 @@ const Customer = () => {
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                                        <Shield className="w-6 h-6"/>
+                                        <Target className="w-6 h-6"/>
                                     </div>
-                                    <CheckCircle className="w-5 h-5 text-emerald-400"/>
+                                    <Star className="w-5 h-5 text-amber-400"/>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-white/50 text-sm font-medium">Verified</p>
-                                    <p className="text-3xl font-bold text-white">98%</p>
+                                    <p className="text-white/50 text-sm font-medium">Avg Performance</p>
+                                    <p className="text-3xl font-bold text-white">4.8</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Modern Customer Cards */}
+                {/* Modern Employee Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {filteredCustomers.length > 0 ? (
-                        filteredCustomers.map((customer, index) => (
+                    {filteredEmployees.length > 0 ? (
+                        filteredEmployees.map((employee, index) => (
                             <div
-                                key={customer.id || index}
+                                key={employee.id || index}
                                 className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-violet-500/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20"
                             >
                                 {/* Animated gradient background */}
@@ -293,8 +315,8 @@ const Customer = () => {
                                 {/* Menu */}
                                 <div className="relative flex items-start justify-between mb-4">
                                     <div className="relative">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full  flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            {customer.username.charAt(0).toUpperCase()}
+                                        <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${getDepartmentColor(employee.department)} flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                            {employee.username.split(' ').map(n => n[0]).join('').toUpperCase()}
                                         </div>
                                         <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-4 border-slate-950 flex items-center justify-center">
                                             <CheckCircle className="w-3 h-3 text-white"/>
@@ -303,47 +325,50 @@ const Customer = () => {
 
                                     <div className="relative">
                                         <button
-                                            onClick={() => setActiveMenu(activeMenu === customer.id ? null : customer.id)}
+                                            onClick={() => setActiveMenu(activeMenu === employee.id ? null : employee.id)}
                                             className="p-2 hover:bg-white/10 rounded-xl transition-all"
                                         >
                                             <MoreVertical className="w-5 h-5 text-white/60"/>
                                         </button>
 
-                                        {activeMenu === customer.id && (
+                                        {activeMenu === employee.id && (
                                             <div className="absolute right-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
                                                 <button
-                                                    onClick={() => openEditModal(customer)}
+                                                    onClick={() => openEditModal(employee)}
                                                     className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-violet-500/20 transition-all text-left group/item"
                                                 >
                                                     <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center group-hover/item:bg-violet-500/30 transition-colors">
                                                         <Edit2 className="w-4 h-4 text-violet-400"/>
                                                     </div>
-                                                    <span className="text-white/90 font-medium">Edit Customer</span>
+                                                    <span className="text-white/90 font-medium">Edit Employee</span>
                                                 </button>
                                                 <button
-                                                    onClick={() => openDeleteModal(customer)}
+                                                    onClick={() => openDeleteModal(employee)}
                                                     className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-red-500/20 transition-all text-left border-t border-white/10 group/item"
                                                 >
                                                     <div className="w-9 h-9 rounded-xl bg-red-500/20 flex items-center justify-center group-hover/item:bg-red-500/30 transition-colors">
                                                         <Trash2 className="w-4 h-4 text-red-400"/>
                                                     </div>
-                                                    <span className="text-red-400 font-medium">Delete Customer</span>
+                                                    <span className="text-red-400 font-medium">Remove Employee</span>
                                                 </button>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Customer Info */}
+                                {/* Employee Info */}
                                 <div className="relative space-y-4">
                                     <div>
                                         <h3 className="text-xl font-bold text-white mb-1 group-hover:text-violet-300 transition-colors">
-                                            {customer.username}
+                                            {employee.username}
                                         </h3>
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-emerald-300 text-xs font-semibold">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
-                                            Active
-                                        </span>
+                                        <p className="text-white/60 text-sm font-medium mb-2">{employee.position}</p>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${getPerformanceBadge(employee.performance)} border rounded-full text-xs font-semibold`}>
+                                                <Star className="w-3 h-3"/>
+                                                {employee.performance}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <div className="space-y-2.5">
@@ -351,13 +376,25 @@ const Customer = () => {
                                             <div className="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center group-hover/item:bg-violet-500/20 transition-colors">
                                                 <Mail className="w-4 h-4 text-violet-400"/>
                                             </div>
-                                            <span className="text-white/70 truncate group-hover/item:text-white/90 transition-colors">{customer.email}</span>
+                                            <span className="text-white/70 truncate group-hover/item:text-white/90 transition-colors">{employee.email}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm group/item">
                                             <div className="w-9 h-9 rounded-xl bg-fuchsia-500/10 flex items-center justify-center group-hover/item:bg-fuchsia-500/20 transition-colors">
                                                 <Phone className="w-4 h-4 text-fuchsia-400"/>
                                             </div>
-                                            <span className="text-white/70 group-hover/item:text-white/90 transition-colors">{customer.phone}</span>
+                                            <span className="text-white/70 group-hover/item:text-white/90 transition-colors">{employee.phone}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-sm group/item">
+                                            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center group-hover/item:bg-cyan-500/20 transition-colors">
+                                                <Briefcase className="w-4 h-4 text-cyan-400"/>
+                                            </div>
+                                            <span className="text-white/70 group-hover/item:text-white/90 transition-colors">{employee.department}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-sm group/item">
+                                            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover/item:bg-emerald-500/20 transition-colors">
+                                                <DollarSign className="w-4 h-4 text-emerald-400"/>
+                                            </div>
+                                            <span className="text-white/70 font-semibold group-hover/item:text-white/90 transition-colors">{employee.salary}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -368,8 +405,8 @@ const Customer = () => {
                             <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mb-6">
                                 <Users className="w-10 h-10 text-white/40"/>
                             </div>
-                            <p className="text-white/80 text-xl font-semibold mb-2">No customers found</p>
-                            <p className="text-white/40">Try adjusting your search or add a new customer</p>
+                            <p className="text-white/80 text-xl font-semibold mb-2">No employees found</p>
+                            <p className="text-white/40">Try adjusting your search or add a new employee</p>
                         </div>
                     )}
                 </div>
@@ -378,17 +415,17 @@ const Customer = () => {
             {/* Ultra Modern Add/Edit Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
-                    <div className="relative w-full max-w-xl">
+                    <div className="relative w-full max-w-2xl">
                         {/* Glow effect */}
                         <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 rounded-3xl blur-3xl opacity-20"></div>
 
-                        <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                        <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
                                     <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent mb-1">
-                                        {editingCustomer ? "Edit Customer" : "Add New Customer"}
+                                        {editingEmployee ? "Edit Employee" : "Add New Employee"}
                                     </h2>
-                                    <p className="text-white/50">Fill in the customer details below</p>
+                                    <p className="text-white/50">Fill in the employee details below</p>
                                 </div>
                                 <button
                                     onClick={() => setIsOpen(false)}
@@ -398,7 +435,7 @@ const Customer = () => {
                                 </button>
                             </div>
 
-                            <div className="space-y-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <label className="block text-sm font-semibold mb-3 text-white/90">Full Name</label>
                                     <div className="relative group">
@@ -411,7 +448,7 @@ const Customer = () => {
                                                 type="text"
                                                 value={formData.username || ""}
                                                 onChange={(e) => setFormData({...formData, username: e.target.value})}
-                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-violet-500 focus:bg-white/10 transition-all text-white placeholder-white/30 text-lg"
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-violet-500 focus:bg-white/10 transition-all text-white placeholder-white/30"
                                                 placeholder="Enter full name"
                                             />
                                         </div>
@@ -430,8 +467,8 @@ const Customer = () => {
                                                 type="email"
                                                 value={formData.email || ""}
                                                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-fuchsia-500 focus:bg-white/10 transition-all text-white placeholder-white/30 text-lg"
-                                                placeholder="customer@example.com"
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-fuchsia-500 focus:bg-white/10 transition-all text-white placeholder-white/30"
+                                                placeholder="email@company.com"
                                             />
                                         </div>
                                     </div>
@@ -449,47 +486,110 @@ const Customer = () => {
                                                 type="tel"
                                                 value={formData.phone || ""}
                                                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-cyan-500 focus:bg-white/10 transition-all text-white placeholder-white/30 text-lg"
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-cyan-500 focus:bg-white/10 transition-all text-white placeholder-white/30"
                                                 placeholder="+1 (555) 000-0000"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label className="block text-sm font-semibold mb-3 text-white/90">Position</label>
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div className="relative flex items-center">
+                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                                                <Briefcase className="w-5 h-5 text-orange-400"/>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={formData.position || ""}
+                                                onChange={(e) => setFormData({...formData, position: e.target.value})}
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-orange-500 focus:bg-white/10 transition-all text-white placeholder-white/30"
+                                                placeholder="Job position"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold mb-3 text-white/90">Department</label>
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div className="relative flex items-center">
+                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                                                <Users className="w-5 h-5 text-violet-400"/>
+                                            </div>
+                                            <select
+                                                value={formData.department || ""}
+                                                onChange={(e) => setFormData({...formData, department: e.target.value})}
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-violet-500 focus:bg-white/10 transition-all text-white appearance-none cursor-pointer"
+                                            >
+                                                <option value="" className="bg-slate-900">Select Department</option>
+                                                <option value="Engineering" className="bg-slate-900">Engineering</option>
+                                                <option value="Product" className="bg-slate-900">Product</option>
+                                                <option value="Design" className="bg-slate-900">Design</option>
+                                                <option value="Marketing" className="bg-slate-900">Marketing</option>
+                                                <option value="Sales" className="bg-slate-900">Sales</option>
+                                                <option value="HR" className="bg-slate-900">HR</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold mb-3 text-white/90">Salary</label>
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div className="relative flex items-center">
+                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                                <DollarSign className="w-5 h-5 text-emerald-400"/>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={formData.salary || ""}
+                                                onChange={(e) => setFormData({...formData, salary: e.target.value})}
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white/10 transition-all text-white placeholder-white/30"
+                                                placeholder="$85,000"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {passwordField && (
-                                    <div>
+                                    <div className="md:col-span-2">
                                         <label className="block text-sm font-semibold mb-3 text-white/90">Password</label>
                                         <div className="relative group">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                            <div className="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                             <div className="relative flex items-center">
-                                                <div className="absolute left-4 w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                                    <Lock className="w-5 h-5 text-emerald-400"/>
+                                                <div className="absolute left-4 w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                                                    <Lock className="w-5 h-5 text-rose-400"/>
                                                 </div>
                                                 <input
                                                     type="password"
                                                     onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                                    className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white/10 transition-all text-white placeholder-white/30 text-lg"
+                                                    className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-rose-500 focus:bg-white/10 transition-all text-white placeholder-white/30"
                                                     placeholder="Enter secure password"
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
+                            </div>
 
-                                <div className="flex gap-4 pt-6">
-                                    <button
-                                        onClick={() => setIsOpen(false)}
-                                        className="flex-1 px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all font-semibold text-lg"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={handleSubmit}
-                                        className="flex-1 px-6 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 rounded-2xl transition-all font-semibold text-lg shadow-lg shadow-violet-500/50 hover:shadow-2xl hover:shadow-violet-500/60 hover:scale-[1.02]"
-                                    >
-                                        {editingCustomer ? "Update" : "Add"} Customer
-                                    </button>
-                                </div>
+                            <div className="flex gap-4 pt-8">
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex-1 px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all font-semibold text-lg"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSubmit}
+                                    className="flex-1 px-6 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 rounded-2xl transition-all font-semibold text-lg shadow-lg shadow-violet-500/50 hover:shadow-2xl hover:shadow-violet-500/60 hover:scale-[1.02]"
+                                >
+                                    {editingEmployee ? "Update" : "Add"} Employee
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -512,13 +612,14 @@ const Customer = () => {
                                 </div>
 
                                 <div>
-                                    <h3 className="text-3xl font-bold text-white mb-3">Delete Customer?</h3>
+                                    <h3 className="text-3xl font-bold text-white mb-3">Remove Employee?</h3>
                                     <p className="text-white/60 text-lg mb-2">
-                                        You&#39;re about to delete
+                                        You&#39;re about to remove
                                     </p>
                                     <p className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                                        {deletingCustomer?.username}
+                                        {deletingEmployee?.username}
                                     </p>
+                                    <p className="text-white/50 text-sm mt-2">{deletingEmployee?.position}</p>
                                     <p className="text-white/50 mt-4">This action cannot be undone.</p>
                                 </div>
 
@@ -533,7 +634,7 @@ const Customer = () => {
                                         onClick={handleDelete}
                                         className="flex-1 px-6 py-4 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 rounded-2xl transition-all font-semibold shadow-lg shadow-red-500/50 hover:shadow-2xl hover:shadow-red-500/60 hover:scale-[1.02]"
                                     >
-                                        Delete
+                                        Remove
                                     </button>
                                 </div>
                             </div>
@@ -542,7 +643,7 @@ const Customer = () => {
                 </div>
             )}
         </div>
-    </>);
+    );
 };
 
-export default Customer;
+export default Employee;

@@ -10,8 +10,8 @@ import {menuItems} from "@/data/data";
 import axios from "axios";
 import Bookings from "@/components/adminModals/bookings";
 import Analytics from "@/components/adminModals/Analytics";
-import {promise} from "bcrypt/promises";
 import Customers from "@/components/adminModals/customers";
+import Employees from "@/components/adminModals/employees";
 
 export const adminContext = createContext();
 const AdminDashBoard = () => {
@@ -271,6 +271,7 @@ const AdminDashBoard = () => {
                     {activeTab === 'bookings' && <Bookings/>}
                     {activeTab === 'customers' && <Customers/>}
                     {activeTab === 'analytics' && <Analytics/>}
+                    {activeTab === 'employees' && <Employees/>}
                 </adminContext.Provider>
             </main>
         </div>

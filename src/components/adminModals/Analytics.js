@@ -97,7 +97,7 @@ const Analytics = () => {
     ];
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
                 <div>

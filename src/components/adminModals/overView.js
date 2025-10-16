@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { DollarSign, Calendar, Users, Star } from "lucide-react";
+import {DollarSign, Calendar, Users, Star, Sparkles} from "lucide-react";
 import { adminContext } from "@/app/admin/page";
 import StatCard from "@/components/adminModals/statCard";
 
@@ -117,9 +117,19 @@ const OverView = () => {
     }, [allBookings, selectedPeriod]);
 
     return (
-        <>
-            {/* ✅ Stats Section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 overflow-x-auto">
+            <div>
+                <div className="flex items-center gap-2 mb-2">
+                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                        Overview
+                    </h1>
+                    <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+                </div>
+                <p className="text-white/60 text-sm">Manage your overview efficiently</p>
+            </div>
+
+            {/*  Stats Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4  mt-2 lg:gap-6">
                 <StatCard
                     icon={<DollarSign className="w-6 h-6 text-green-400" />}
                     color="green"
@@ -150,7 +160,7 @@ const OverView = () => {
                 />
             </div>
 
-            {/* ✅ Recent Bookings Section */}
+            {/*  Recent Bookings Section */}
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mt-6">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
                     <h3 className="text-xl font-bold">Recent Bookings</h3>
@@ -199,7 +209,7 @@ const OverView = () => {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

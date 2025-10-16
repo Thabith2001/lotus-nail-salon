@@ -8,7 +8,6 @@ export async function POST(req) {
         const body = await req.json();
         const { username, email, phone, password } = body;
 
-        console.log("Received data:", body);
 
         if (!username || !email || !phone || !password) {
             return NextResponse.json(
@@ -47,7 +46,7 @@ export async function POST(req) {
             { status: 201 }
         );
     } catch (err) {
-        console.error("Registration error:", err);
+
         return NextResponse.json(
             { success: false, error: err.message },
             { status: 500 }

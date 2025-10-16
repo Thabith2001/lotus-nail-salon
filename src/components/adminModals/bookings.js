@@ -1,7 +1,7 @@
 'use client';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {adminContext} from '@/app/admin/page';
-import {Download, Plus, Edit, Trash2} from 'lucide-react';
+import {Download, Trash2, Sparkles} from 'lucide-react';
 import {HandleDelete} from '@/components/adminModals/deleteToast'
 import {useRouter} from "next/navigation";
 import axios from "axios";
@@ -75,7 +75,15 @@ const Bookings = () => {
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 overflow-x-auto">
             {/* Header */}
             <div className="flex flex-wrap items-center justify-between mb-6 gap-3">
-                <h3 className="text-xl font-bold">All Bookings</h3>
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                            Booking Management
+                        </h1>
+                        <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+                    </div>
+                    <p className="text-white/60 text-sm">Manage your bookings efficiently</p>
+                </div>
                 <div className="flex gap-3">
                     <button
                         onClick={handleExport}

@@ -28,7 +28,7 @@ export const metadata = {
 export default function RootLayout({children}) {
     return (
         <html lang="en" className={`${inter_Tight.variable}`}>
-        <body className="font-sans">
+        <body className="font-sans overflow-x-hidden">
         <ClientLayout>
                 {children}
         </ClientLayout>
