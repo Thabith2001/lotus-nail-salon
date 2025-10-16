@@ -19,10 +19,10 @@ export const GET = async (req, { params }) => {
 };
 
 
-export const PATCH = async (req, { params }) => {
+export const PATCH = async (req,context) => {
     try {
         await connectDB();
-        const { id } = params;
+        const { id } = await context.params;
         const body = await req.json();
 
         const updated = await Employees.findByIdAndUpdate(id, body, { new: true });

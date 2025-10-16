@@ -41,7 +41,8 @@ export const POST = async (req) => {
             hireDate,
             leaveDate,
             employeeStatus,
-            role
+            role,
+            performance,
         } = body;
 
         if (!employeeName || !email || !phone || !password || !department || !position || !salary || !hireDate) {
@@ -75,7 +76,8 @@ export const POST = async (req) => {
             hireDate,
             leaveDate,
             employeeStatus,
-            role
+            role,
+            performance,
         });
 
         return NextResponse.json(

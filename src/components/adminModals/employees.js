@@ -9,79 +9,28 @@ import {
     Phone,
     User,
     CheckCircle,
-    Clock,
-    XCircle,
     Edit2,
     Trash2,
     MoreVertical,
     Lock,
-    Shield,
     TrendingUp,
     Users,
     Activity,
     Briefcase,
-    Calendar,
     DollarSign,
     Award,
     Target,
-    Star, Sparkles
+    Star,
+    Sparkles
 } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import {adminContext} from "@/app/admin/page";
 
-// Mock adminContext
-const AdminContext = React.createContext({ searchTerm: '' });
 
 const Employee = () => {
-    const { searchTerm } = useContext(AdminContext);
-    const [employees, setEmployees] = useState([
-        {
-            id: '1',
-            username: 'Robert Anderson',
-            email: 'robert.a@company.com',
-            phone: '+1234567890',
-            status: 'active',
-            position: 'Senior Developer',
-            department: 'Engineering',
-            joinDate: '2023-01-15',
-            salary: '$95,000',
-            performance: 'excellent'
-        },
-        {
-            id: '2',
-            username: 'Emily Rodriguez',
-            email: 'emily.r@company.com',
-            phone: '+0987654321',
-            status: 'active',
-            position: 'Product Manager',
-            department: 'Product',
-            joinDate: '2023-03-20',
-            salary: '$105,000',
-            performance: 'excellent'
-        },
-        {
-            id: '3',
-            username: 'Michael Chen',
-            email: 'michael.c@company.com',
-            phone: '+1122334455',
-            status: 'active',
-            position: 'UX Designer',
-            department: 'Design',
-            joinDate: '2023-06-10',
-            salary: '$85,000',
-            performance: 'good'
-        },
-        {
-            id: '4',
-            username: 'Sarah Thompson',
-            email: 'sarah.t@company.com',
-            phone: '+5566778899',
-            status: 'active',
-            position: 'Marketing Lead',
-            department: 'Marketing',
-            joinDate: '2023-08-05',
-            salary: '$90,000',
-            performance: 'excellent'
-        }
-    ]);
+    const {searchTerm} = useContext(adminContext);
+    const [employees, setEmployees] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [editingEmployee, setEditingEmployee] = useState(null);
@@ -95,8 +44,46 @@ const Employee = () => {
         password: "",
         position: "",
         department: "",
-        salary: ""
+        salary: "",
+        performance: "",
+
     });
+
+    // Fetch employees from API
+    const fetchEmployees = async () => {
+        try {
+            const response = await axios.get("/api/employees");
+            const employeesData = response.data?.data || [];
+
+            const formatted = employeesData.map((employee) => ({
+                id: employee._id,
+                username: employee.employeeName || "Unknown",
+                email: employee.email || "N/A",
+                phone: employee.phone || "N/A",
+                department: employee.department || "N/A",
+                position: employee.position || "N/A",
+                salary: employee.salary || "N/A",
+                joinDate: employee.hireDate || new Date().toISOString(),
+                status: employee.employeeStatus || "active",
+                role: employee.role || "employee",
+                performance: employee.performance || "good"
+            }));
+
+            setEmployees(formatted);
+        } catch (error) {
+            console.error("Failed to fetch employees:", error);
+            toast.error("Failed to load employees", {
+                style: {
+                    background: "#ef4444",
+                    color: "#fff"
+                }
+            });
+        }
+    };
+
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
 
     // Filtered employees based on search
     const filteredEmployees = useMemo(() => {
@@ -120,10 +107,19 @@ const Employee = () => {
         URL.revokeObjectURL(url);
     };
 
-    // Modals
+    // Modal functions
     const openAddModal = () => {
         setEditingEmployee(null);
-        setFormData({username: '', email: '', phone: '', password: '', position: '', department: '', salary: ''});
+        setFormData({
+            username: '',
+            email: '',
+            phone: '',
+            password: '',
+            position: '',
+            department: '',
+            salary: '',
+            performance: ''
+        });
         setIsOpen(true);
         setActiveMenu(null);
         setPasswordField(true);
@@ -137,7 +133,9 @@ const Employee = () => {
             phone: employee.phone || "",
             position: employee.position || "",
             department: employee.department || "",
-            salary: employee.salary || ""
+            salary: employee.salary || "",
+            performance: employee.performance
+
         });
         setIsOpen(true);
         setActiveMenu(null);
@@ -150,31 +148,122 @@ const Employee = () => {
         setActiveMenu(null);
     };
 
-    const handleSubmit = () => {
-        if (editingEmployee) {
-            console.log('Updating employee:', editingEmployee.id, formData);
-        } else {
-            console.log('Adding new employee:', formData);
+    // Submit handler (Add/Edit)
+    const handleSubmit = async () => {
+        try {
+            if (editingEmployee) {
+                // Update employee
+                const updateData = {
+                    employeeName: formData.username,
+                    email: formData.email,
+                    phone: formData.phone,
+                    position: formData.position,
+                    department: formData.department,
+                    salary: formData.salary,
+                    performance: formData.performance,
+
+                };
+
+                const response = await axios.patch(`/api/employees/${editingEmployee.id}`, updateData);
+
+                if (response.status === 200) {
+                    toast.success("Employee updated successfully!", {
+                        style: {
+                            background: "#10b981",
+                            color: "#fff"
+                        }
+                    });
+                    await fetchEmployees();
+                }
+            } else {
+                // Add new employee
+                const newEmployeeData = {
+                    employeeName: formData.username,
+                    email: formData.email,
+                    phone: formData.phone,
+                    password: formData.password,
+                    position: formData.position,
+                    department: formData.department,
+                    salary: formData.salary,
+                    role: "employee",
+                    hireDate: new Date().toISOString(),
+                    performance: formData.performance,
+                };
+
+                const response = await axios.post("/api/employees", newEmployeeData);
+
+                if (response.status === 201) {
+                    toast.success("Employee added successfully!", {
+                        style: {
+                            background: "#10b981",
+                            color: "#fff"
+                        }
+                    });
+                    await fetchEmployees();
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            toast.error(error.response?.data?.message || "Failed to save employee", {
+                style: {
+                    background: "#ef4444",
+                    color: "#fff"
+                }
+            });
         }
+
         setIsOpen(false);
         setEditingEmployee(null);
-        setFormData({username: '', email: '', phone: '', password: '', position: '', department: '', salary: ''});
+        setFormData({
+            username: '',
+            email: '',
+            phone: '',
+            password: '',
+            position: '',
+            department: '',
+            salary: '',
+            performance: ''
+        });
     };
 
-    const handleDelete = () => {
-        console.log('Deleting employee:', deletingEmployee.id);
+    // Delete handler
+    const handleDelete = async () => {
+        try {
+            const response = await axios.delete(`/api/employees/${deletingEmployee.id}`);
+
+            if (response.status === 200) {
+                toast.success("Employee deleted successfully!", {
+                    style: {
+                        background: "#10b981",
+                        color: "#fff"
+                    }
+                });
+                await fetchEmployees();
+            }
+        } catch (error) {
+            console.error('Error deleting employee:', error);
+            toast.error("Failed to delete employee", {
+                style: {
+                    background: "#ef4444",
+                    color: "#fff"
+                }
+            });
+        }
+
         setIsDeleteOpen(false);
         setDeletingEmployee(null);
     };
 
     const getPerformanceBadge = (performance) => {
-        switch(performance) {
-            case 'excellent':
+        switch (performance?.toLowerCase()) {
+            case 'experience':
                 return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
             case 'good':
                 return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
             case 'average':
-                return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+                return 'bg-orange-600/20 text-orange-400 border-orange-600/30';
+            case 'professional':
+                return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
             default:
                 return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
         }
@@ -182,18 +271,20 @@ const Employee = () => {
 
     const getDepartmentColor = (department) => {
         const colors = {
-            'Engineering': 'from-violet-500 to-purple-600',
-            'Product': 'from-fuchsia-500 to-pink-600',
-            'Design': 'from-cyan-500 to-blue-600',
+            'Nail Services Department': 'from-violet-500 to-purple-600',
+            'Customer Service': 'from-fuchsia-500 to-pink-600',
+            'Management': 'from-cyan-500 to-blue-600',
             'Marketing': 'from-orange-500 to-red-600',
-            'Sales': 'from-emerald-500 to-teal-600',
-            'HR': 'from-rose-500 to-pink-600'
+            'Cleaning & Sanitation': 'from-emerald-500 to-teal-600',
+            'HR': 'from-rose-500 to-pink-600',
+            'Inventory & Supplies': 'from-sky-400 to-indigo-500',
+            'Training & Quality': 'from-emerald-500 to-lime-600',
         };
         return colors[department] || 'from-gray-500 to-gray-600';
     };
-
     return (
-        <div className="min-h-screen backdrop-blur-2xl bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8">
+        <div
+            className="min-h-screen backdrop-blur-2xl bg-white/5 border-white/10 rounded-2xl p-4 md:p-8">
             <div className="max-w-[1600px] mx-auto space-y-6">
                 {/* Modern Header */}
                 <div className="flex flex-col gap-6">
@@ -201,9 +292,9 @@ const Employee = () => {
                         <div>
                             <div className="flex items-center gap-2 mb-2">
                                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                                    Employees Management
+                                    Employee Management
                                 </h1>
-                                <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+                                <Sparkles className="w-6 h-6 text-purple-400 animate-pulse"/>
                             </div>
                             <p className="text-white/50 text-sm">Manage your team members and their information</p>
                         </div>
@@ -212,7 +303,8 @@ const Employee = () => {
                                 onClick={handleExport}
                                 className="group relative px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div
+                                    className="absolute inset-0 bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="relative flex items-center gap-2">
                                     <Download className="w-5 h-5"/>
                                     <span className="font-medium">Export</span>
@@ -222,7 +314,8 @@ const Employee = () => {
                                 onClick={openAddModal}
                                 className="group relative px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl transition-all duration-300 overflow-hidden hover:shadow-2xl hover:shadow-violet-500/50 hover:scale-105"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div
+                                    className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="relative flex items-center gap-2">
                                     <UserPlus className="w-5 h-5"/>
                                     <span className="font-semibold">Add Employee</span>
@@ -233,11 +326,14 @@ const Employee = () => {
 
                     {/* Modern Stats Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div
+                            className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-violet-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
                                         <Users className="w-6 h-6"/>
                                     </div>
                                     <TrendingUp className="w-5 h-5 text-emerald-400"/>
@@ -249,11 +345,14 @@ const Employee = () => {
                             </div>
                         </div>
 
-                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div
+                            className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
                                         <Activity className="w-6 h-6"/>
                                     </div>
                                     <div className="flex items-center gap-1 text-emerald-400 text-sm">
@@ -267,27 +366,33 @@ const Employee = () => {
                             </div>
                         </div>
 
-                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div
+                            className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-fuchsia-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 flex items-center justify-center">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 flex items-center justify-center">
                                         <Briefcase className="w-6 h-6"/>
                                     </div>
                                     <Award className="w-5 h-5 text-fuchsia-400"/>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-white/50 text-sm font-medium">Departments</p>
-                                    <p className="text-3xl font-bold text-white">6</p>
+                                    <p className="text-3xl font-bold text-white">{new Set(employees.map(e => e.department)).size}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div
+                            className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
                                         <Target className="w-6 h-6"/>
                                     </div>
                                     <Star className="w-5 h-5 text-amber-400"/>
@@ -304,21 +409,22 @@ const Employee = () => {
                 {/* Modern Employee Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     {filteredEmployees.length > 0 ? (
-                        filteredEmployees.map((employee, index) => (
+                        filteredEmployees.map((employee) => (
                             <div
-                                key={employee.id || index}
+                                key={employee.id}
                                 className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-violet-500/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20"
                             >
-                                {/* Animated gradient background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-violet-600/0 via-fuchsia-600/0 to-cyan-600/0 group-hover:from-violet-600/10 group-hover:via-fuchsia-600/5 group-hover:to-cyan-600/10 rounded-3xl transition-all duration-500"></div>
+                                <div
+                                    className="absolute inset-0 bg-gradient-to-br from-violet-600/0 via-fuchsia-600/0 to-cyan-600/0 group-hover:from-violet-600/10 group-hover:via-fuchsia-600/5 group-hover:to-cyan-600/10 rounded-3xl transition-all duration-500"></div>
 
-                                {/* Menu */}
                                 <div className="relative flex items-start justify-between mb-4">
                                     <div className="relative">
-                                        <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${getDepartmentColor(employee.department)} flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                        <div
+                                            className={`w-16 h-16 rounded-full bg-gradient-to-br ${getDepartmentColor(employee.department)} flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                             {employee.username.split(' ').map(n => n[0]).join('').toUpperCase()}
                                         </div>
-                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-4 border-slate-950 flex items-center justify-center">
+                                        <div
+                                            className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-4 border-slate-950 flex items-center justify-center">
                                             <CheckCircle className="w-3 h-3 text-white"/>
                                         </div>
                                     </div>
@@ -332,12 +438,14 @@ const Employee = () => {
                                         </button>
 
                                         {activeMenu === employee.id && (
-                                            <div className="absolute right-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <div
+                                                className="absolute right-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-20">
                                                 <button
                                                     onClick={() => openEditModal(employee)}
                                                     className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-violet-500/20 transition-all text-left group/item"
                                                 >
-                                                    <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center group-hover/item:bg-violet-500/30 transition-colors">
+                                                    <div
+                                                        className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center group-hover/item:bg-violet-500/30 transition-colors">
                                                         <Edit2 className="w-4 h-4 text-violet-400"/>
                                                     </div>
                                                     <span className="text-white/90 font-medium">Edit Employee</span>
@@ -346,7 +454,8 @@ const Employee = () => {
                                                     onClick={() => openDeleteModal(employee)}
                                                     className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-red-500/20 transition-all text-left border-t border-white/10 group/item"
                                                 >
-                                                    <div className="w-9 h-9 rounded-xl bg-red-500/20 flex items-center justify-center group-hover/item:bg-red-500/30 transition-colors">
+                                                    <div
+                                                        className="w-9 h-9 rounded-xl bg-red-500/20 flex items-center justify-center group-hover/item:bg-red-500/30 transition-colors">
                                                         <Trash2 className="w-4 h-4 text-red-400"/>
                                                     </div>
                                                     <span className="text-red-400 font-medium">Remove Employee</span>
@@ -356,53 +465,63 @@ const Employee = () => {
                                     </div>
                                 </div>
 
-                                {/* Employee Info */}
                                 <div className="relative space-y-4">
                                     <div>
                                         <h3 className="text-xl font-bold text-white mb-1 group-hover:text-violet-300 transition-colors">
-                                            {employee.username}
+                                            {employee.username.toUpperCase()}
                                         </h3>
-                                        <p className="text-white/60 text-sm font-medium mb-2">{employee.position}</p>
+                                        <p className="text-white/60 text-sm font-medium mb-2">{employee.position.charAt(0).toUpperCase() + employee.position.slice(1)}</p>
                                         <div className="flex items-center gap-2">
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${getPerformanceBadge(employee.performance)} border rounded-full text-xs font-semibold`}>
+                                            <span
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1 ${getPerformanceBadge(employee.performance)} border rounded-full text-xs font-semibold`}>
                                                 <Star className="w-3 h-3"/>
-                                                {employee.performance}
+                                                {employee.performance || 'good'}
                                             </span>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2.5">
                                         <div className="flex items-center gap-3 text-sm group/item">
-                                            <div className="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center group-hover/item:bg-violet-500/20 transition-colors">
+                                            <div
+                                                className="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center group-hover/item:bg-violet-500/20 transition-colors">
                                                 <Mail className="w-4 h-4 text-violet-400"/>
                                             </div>
-                                            <span className="text-white/70 truncate group-hover/item:text-white/90 transition-colors">{employee.email}</span>
+                                            <span
+                                                className="text-white/70 truncate group-hover/item:text-white/90 transition-colors">{employee.email}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm group/item">
-                                            <div className="w-9 h-9 rounded-xl bg-fuchsia-500/10 flex items-center justify-center group-hover/item:bg-fuchsia-500/20 transition-colors">
+                                            <div
+                                                className="w-9 h-9 rounded-xl bg-fuchsia-500/10 flex items-center justify-center group-hover/item:bg-fuchsia-500/20 transition-colors">
                                                 <Phone className="w-4 h-4 text-fuchsia-400"/>
                                             </div>
-                                            <span className="text-white/70 group-hover/item:text-white/90 transition-colors">{employee.phone}</span>
+                                            <span
+                                                className="text-white/70 group-hover/item:text-white/90 transition-colors">{employee.phone}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm group/item">
-                                            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center group-hover/item:bg-cyan-500/20 transition-colors">
+                                            <div
+                                                className="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center group-hover/item:bg-cyan-500/20 transition-colors">
                                                 <Briefcase className="w-4 h-4 text-cyan-400"/>
                                             </div>
-                                            <span className="text-white/70 group-hover/item:text-white/90 transition-colors">{employee.department}</span>
+                                            <span
+                                                className="text-white/70 group-hover/item:text-white/90 transition-colors">{employee.department}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm group/item">
-                                            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover/item:bg-emerald-500/20 transition-colors">
+                                            <div
+                                                className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover/item:bg-emerald-500/20 transition-colors">
                                                 <DollarSign className="w-4 h-4 text-emerald-400"/>
                                             </div>
-                                            <span className="text-white/70 font-semibold group-hover/item:text-white/90 transition-colors">{employee.salary}</span>
+                                            <span
+                                                className="text-white/70 font-semibold group-hover/item:text-white/90 transition-colors">{employee.salary}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <div className="col-span-full flex flex-col items-center justify-center py-24 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10">
-                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mb-6">
+                        <div
+                            className="col-span-full flex flex-col items-center justify-center py-24 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10">
+                            <div
+                                className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mb-6">
                                 <Users className="w-10 h-10 text-white/40"/>
                             </div>
                             <p className="text-white/80 text-xl font-semibold mb-2">No employees found</p>
@@ -412,14 +531,15 @@ const Employee = () => {
                 </div>
             </div>
 
-            {/* Ultra Modern Add/Edit Modal */}
+            {/* Add/Edit Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
                     <div className="relative w-full max-w-2xl">
-                        {/* Glow effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 rounded-3xl blur-3xl opacity-20"></div>
+                        <div
+                            className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 rounded-3xl blur-3xl opacity-20"></div>
 
-                        <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div
+                            className="relative bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
                                     <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent mb-1">
@@ -439,9 +559,11 @@ const Employee = () => {
                                 <div>
                                     <label className="block text-sm font-semibold mb-3 text-white/90">Full Name</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
                                                 <User className="w-5 h-5 text-violet-400"/>
                                             </div>
                                             <input
@@ -456,11 +578,14 @@ const Employee = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold mb-3 text-white/90">Email Address</label>
+                                    <label className="block text-sm font-semibold mb-3 text-white/90">Email
+                                        Address</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-pink-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-pink-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-fuchsia-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-fuchsia-500/10 flex items-center justify-center">
                                                 <Mail className="w-5 h-5 text-fuchsia-400"/>
                                             </div>
                                             <input
@@ -475,11 +600,14 @@ const Employee = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold mb-3 text-white/90">Phone Number</label>
+                                    <label className="block text-sm font-semibold mb-3 text-white/90">Phone
+                                        Number</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
                                                 <Phone className="w-5 h-5 text-cyan-400"/>
                                             </div>
                                             <input
@@ -496,9 +624,11 @@ const Employee = () => {
                                 <div>
                                     <label className="block text-sm font-semibold mb-3 text-white/90">Position</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
                                                 <Briefcase className="w-5 h-5 text-orange-400"/>
                                             </div>
                                             <input
@@ -515,9 +645,11 @@ const Employee = () => {
                                 <div>
                                     <label className="block text-sm font-semibold mb-3 text-white/90">Department</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
                                                 <Users className="w-5 h-5 text-violet-400"/>
                                             </div>
                                             <select
@@ -526,12 +658,12 @@ const Employee = () => {
                                                 className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-violet-500 focus:bg-white/10 transition-all text-white appearance-none cursor-pointer"
                                             >
                                                 <option value="" className="bg-slate-900">Select Department</option>
-                                                <option value="Engineering" className="bg-slate-900">Engineering</option>
-                                                <option value="Product" className="bg-slate-900">Product</option>
-                                                <option value="Design" className="bg-slate-900">Design</option>
-                                                <option value="Marketing" className="bg-slate-900">Marketing</option>
-                                                <option value="Sales" className="bg-slate-900">Sales</option>
-                                                <option value="HR" className="bg-slate-900">HR</option>
+                                                {["Nail Services Department", "Customer Service", "Management", "Cleaning & Sanitation", "Marketing", "Inventory & Supplies", "HR", "Training & Quality"].map(department => (
+                                                    <option className="bg-slate-900" key={department}
+                                                            value={department}>
+                                                        {department}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
@@ -540,9 +672,11 @@ const Employee = () => {
                                 <div>
                                     <label className="block text-sm font-semibold mb-3 text-white/90">Salary</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                                                 <DollarSign className="w-5 h-5 text-emerald-400"/>
                                             </div>
                                             <input
@@ -556,18 +690,56 @@ const Employee = () => {
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label
+                                        className="block text-sm font-semibold mb-3 text-white/90">Performance</label>
+                                    <div className="relative group">
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-800 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div className="relative flex items-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                                                <Target className="w-5 h-5 text-green-500"/>
+                                            </div>
+                                            <select
+                                                value={formData.performance || ""}
+                                                onChange={(e) => setFormData({
+                                                    ...formData,
+                                                    performance: e.target.value
+                                                })}
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-green-400 focus:bg-white/10 transition-all text-white appearance-none cursor-pointer"
+                                            >
+                                                <option value="" className="bg-slate-900">Select Performance</option>
+                                                {["Experience", "Good", "Average", "professional"].map(performance => (
+                                                    <option className="bg-slate-900" key={performance}
+                                                            value={performance}>
+                                                        {performance}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {passwordField && (
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-semibold mb-3 text-white/90">Password</label>
+                                        <label
+                                            className="block text-sm font-semibold mb-3 text-white/90">Password</label>
                                         <div className="relative group">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                            <div
+                                                className="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                             <div className="relative flex items-center">
-                                                <div className="absolute left-4 w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                                                <div
+                                                    className="absolute left-4 w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
                                                     <Lock className="w-5 h-5 text-rose-400"/>
                                                 </div>
                                                 <input
                                                     type="password"
-                                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                                    value={formData.password || ""}
+                                                    onChange={(e) => setFormData({
+                                                        ...formData,
+                                                        password: e.target.value
+                                                    })}
                                                     className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-rose-500 focus:bg-white/10 transition-all text-white placeholder-white/30"
                                                     placeholder="Enter secure password"
                                                 />
@@ -596,19 +768,23 @@ const Employee = () => {
                 </div>
             )}
 
-            {/* Ultra Modern Delete Modal */}
+            {/* Delete Modal */}
             {isDeleteOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
                     <div className="relative w-full max-w-md">
-                        <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-600 rounded-3xl blur-3xl opacity-20"></div>
+                        <div
+                            className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-600 rounded-3xl blur-3xl opacity-20"></div>
 
-                        <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-8 shadow-2xl">
+                        <div
+                            className="relative bg-slate-900/90 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-8 shadow-2xl">
                             <div className="flex flex-col items-center text-center space-y-6">
                                 <div className="relative">
-                                    <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
+                                    <div
+                                        className="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
                                         <Trash2 className="w-10 h-10"/>
                                     </div>
-                                    <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-rose-600 rounded-3xl blur-2xl opacity-50"></div>
+                                    <div
+                                        className="absolute inset-0 bg-gradient-to-br from-red-500 to-rose-600 rounded-3xl blur-2xl opacity-50"></div>
                                 </div>
 
                                 <div>
@@ -644,6 +820,5 @@ const Employee = () => {
             )}
         </div>
     );
-};
-
+}
 export default Employee;

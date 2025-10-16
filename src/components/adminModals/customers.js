@@ -16,7 +16,12 @@ import {
     Trash2,
     MoreVertical,
     Lock,
-    Dot, Users, Activity, Shield, TrendingUp, Sparkles
+    Dot,
+    Users,
+    Activity,
+    Shield,
+    TrendingUp,
+    Sparkles
 } from "lucide-react";
 import axios from "axios";
 import {adminContext} from "@/app/admin/page";
@@ -90,9 +95,7 @@ const Customer = () => {
     const openEditModal = (customer) => {
         setEditingCustomer(customer);
         setFormData({
-            username: customer.username || "",
-            email: customer.email || "",
-            phone: customer.phone || "",
+            username: customer.username || "", email: customer.email || "", phone: customer.phone || "",
         });
         setIsOpen(true);
         setActiveMenu(null);
@@ -159,33 +162,6 @@ const Customer = () => {
         setIsDeleteOpen(false);
         setDeletingCustomer(null);
     };
-
-    const getStatusIcon = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'active':
-                return <Dot className="w-10 h-10 text-emerald-400"/>;
-            case 'pending':
-                return <Clock className="w-4 h-4 text-amber-400"/>;
-            case 'inactive':
-                return <XCircle className="w-4 h-4 text-red-400"/>;
-            default:
-                return <Clock className="w-4 h-4 text-gray-400"/>;
-        }
-    };
-
-    const getStatusColor = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'active':
-                return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-            case 'pending':
-                return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-            case 'inactive':
-                return 'bg-red-500/20 text-red-300 border-red-500/30';
-            default:
-                return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
-        }
-    };
-
     return (<>
         <div className="min-h-screen backdrop-blur-xl bg-white/5  border border-white/10 rounded-2xl p-4 md:p-8">
             <div className="max-w-[1600px] mx-auto space-y-6">
@@ -197,7 +173,7 @@ const Customer = () => {
                                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
                                     Customer Management
                                 </h1>
-                                <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+                                <Sparkles className="w-6 h-6 text-purple-400 animate-pulse"/>
                             </div>
                             <p className="text-white/60 text-sm">Manage your customer base efficiently</p>
                         </div>
@@ -206,7 +182,8 @@ const Customer = () => {
                                 onClick={handleExport}
                                 className="group relative px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div
+                                    className="absolute inset-0 bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="relative flex items-center gap-2">
                                     <Download className="w-5 h-5"/>
                                     <span className="font-medium">Export</span>
@@ -216,7 +193,8 @@ const Customer = () => {
                                 onClick={openAddModal}
                                 className="group relative px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl transition-all duration-300 overflow-hidden hover:shadow-2xl hover:shadow-violet-500/50 hover:scale-105"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div
+                                    className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="relative flex items-center gap-2">
                                     <UserPlus className="w-5 h-5"/>
                                     <span className="font-semibold">Add Customer</span>
@@ -227,11 +205,14 @@ const Customer = () => {
 
                     {/* Modern Stats Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div
+                            className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-violet-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
                                         <Users className="w-6 h-6"/>
                                     </div>
                                     <TrendingUp className="w-5 h-5 text-emerald-400"/>
@@ -243,11 +224,14 @@ const Customer = () => {
                             </div>
                         </div>
 
-                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div
+                            className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
                                         <Activity className="w-6 h-6"/>
                                     </div>
                                     <div className="flex items-center gap-1 text-emerald-400 text-sm">
@@ -261,11 +245,14 @@ const Customer = () => {
                             </div>
                         </div>
 
-                        <div className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div
+                            className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                                    <div
+                                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
                                         <Shield className="w-6 h-6"/>
                                     </div>
                                     <CheckCircle className="w-5 h-5 text-emerald-400"/>
@@ -281,97 +268,109 @@ const Customer = () => {
 
                 {/* Modern Customer Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {filteredCustomers.length > 0 ? (
-                        filteredCustomers.map((customer, index) => (
-                            <div
-                                key={customer.id || index}
-                                className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-violet-500/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20"
-                            >
-                                {/* Animated gradient background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-violet-600/0 via-fuchsia-600/0 to-cyan-600/0 group-hover:from-violet-600/10 group-hover:via-fuchsia-600/5 group-hover:to-cyan-600/10 rounded-3xl transition-all duration-500"></div>
+                    {filteredCustomers.length > 0 ? (filteredCustomers.map((customer, index) => (<div
+                        key={customer.id || index}
+                        className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-violet-500/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20"
+                    >
+                        {/* Animated gradient background */}
+                        <div
+                            className="absolute inset-0 bg-gradient-to-br from-violet-600/0 via-fuchsia-600/0 to-cyan-600/0 group-hover:from-violet-600/10 group-hover:via-fuchsia-600/5 group-hover:to-cyan-600/10 rounded-3xl transition-all duration-500"></div>
 
-                                {/* Menu */}
-                                <div className="relative flex items-start justify-between mb-4">
-                                    <div className="relative">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full  flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            {customer.username.charAt(0).toUpperCase()}
-                                        </div>
-                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-4 border-slate-950 flex items-center justify-center">
-                                            <CheckCircle className="w-3 h-3 text-white"/>
-                                        </div>
-                                    </div>
-
-                                    <div className="relative">
-                                        <button
-                                            onClick={() => setActiveMenu(activeMenu === customer.id ? null : customer.id)}
-                                            className="p-2 hover:bg-white/10 rounded-xl transition-all"
-                                        >
-                                            <MoreVertical className="w-5 h-5 text-white/60"/>
-                                        </button>
-
-                                        {activeMenu === customer.id && (
-                                            <div className="absolute right-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-                                                <button
-                                                    onClick={() => openEditModal(customer)}
-                                                    className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-violet-500/20 transition-all text-left group/item"
-                                                >
-                                                    <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center group-hover/item:bg-violet-500/30 transition-colors">
-                                                        <Edit2 className="w-4 h-4 text-violet-400"/>
-                                                    </div>
-                                                    <span className="text-white/90 font-medium">Edit Customer</span>
-                                                </button>
-                                                <button
-                                                    onClick={() => openDeleteModal(customer)}
-                                                    className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-red-500/20 transition-all text-left border-t border-white/10 group/item"
-                                                >
-                                                    <div className="w-9 h-9 rounded-xl bg-red-500/20 flex items-center justify-center group-hover/item:bg-red-500/30 transition-colors">
-                                                        <Trash2 className="w-4 h-4 text-red-400"/>
-                                                    </div>
-                                                    <span className="text-red-400 font-medium">Delete Customer</span>
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
+                        {/* Menu */}
+                        <div className="relative flex items-start justify-between mb-4">
+                            <div className="relative">
+                                <div
+                                    className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full  flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                    {customer.username.charAt(0).toUpperCase()}
                                 </div>
-
-                                {/* Customer Info */}
-                                <div className="relative space-y-4">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white mb-1 group-hover:text-violet-300 transition-colors">
-                                            {customer.username}
-                                        </h3>
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-emerald-300 text-xs font-semibold">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
-                                            Active
-                                        </span>
-                                    </div>
-
-                                    <div className="space-y-2.5">
-                                        <div className="flex items-center gap-3 text-sm group/item">
-                                            <div className="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center group-hover/item:bg-violet-500/20 transition-colors">
-                                                <Mail className="w-4 h-4 text-violet-400"/>
-                                            </div>
-                                            <span className="text-white/70 truncate group-hover/item:text-white/90 transition-colors">{customer.email}</span>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-sm group/item">
-                                            <div className="w-9 h-9 rounded-xl bg-fuchsia-500/10 flex items-center justify-center group-hover/item:bg-fuchsia-500/20 transition-colors">
-                                                <Phone className="w-4 h-4 text-fuchsia-400"/>
-                                            </div>
-                                            <span className="text-white/70 group-hover/item:text-white/90 transition-colors">{customer.phone}</span>
-                                        </div>
-                                    </div>
+                                <div
+                                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-4 border-slate-950 flex items-center justify-center">
+                                    <CheckCircle className="w-3 h-3 text-white"/>
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        <div className="col-span-full flex flex-col items-center justify-center py-24 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10">
-                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mb-6">
-                                <Users className="w-10 h-10 text-white/40"/>
+
+                            <div className="relative">
+                                <button
+                                    onClick={() => setActiveMenu(activeMenu === customer.id ? null : customer.id)}
+                                    className="p-2 hover:bg-white/10 rounded-xl transition-all"
+                                >
+                                    <MoreVertical className="w-5 h-5 text-white/60"/>
+                                </button>
+
+                                {activeMenu === customer.id && (<div
+                                    className="absolute right-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <button
+                                        onClick={() => openEditModal(customer)}
+                                        className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-violet-500/20 transition-all text-left group/item"
+                                    >
+                                        <div
+                                            className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center group-hover/item:bg-violet-500/30 transition-colors">
+                                            <Edit2 className="w-4 h-4 text-violet-400"/>
+                                        </div>
+                                        <span className="text-white/90 font-medium">Edit Customer</span>
+                                    </button>
+                                    <button
+                                        onClick={() => openDeleteModal(customer)}
+                                        className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-red-500/20 transition-all text-left border-t border-white/10 group/item"
+                                    >
+                                        <div
+                                            className="w-9 h-9 rounded-xl bg-red-500/20 flex items-center justify-center group-hover/item:bg-red-500/30 transition-colors">
+                                            <Trash2 className="w-4 h-4 text-red-400"/>
+                                        </div>
+                                        <span className="text-red-400 font-medium">Delete Customer</span>
+                                    </button>
+                                </div>)}
                             </div>
-                            <p className="text-white/80 text-xl font-semibold mb-2">No customers found</p>
-                            <p className="text-white/40">Try adjusting your search or add a new customer</p>
                         </div>
-                    )}
+
+                        {/* Customer Info */}
+                        <div className="relative space-y-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-1 group-hover:text-violet-300 transition-colors">
+                                    {customer.username.toUpperCase()}
+                                </h3>
+                                <span
+                                    className={`inline-flex items-center gap-1.5 px-3 py-1 border rounded-full text-xs font-semibold
+    ${customer.status?.toLowerCase() === "active" ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-300" : customer.status?.toLowerCase() === "pending" ? "bg-amber-500/20 border-amber-500/30 text-amber-300" : customer.status?.toLowerCase() === "inactive" ? "bg-red-500/20 border-red-500/30 text-red-300" : "bg-gray-500/20 border-gray-500/30 text-gray-300"}`}
+                                >
+  <div
+      className={`w-1.5 h-1.5 rounded-full animate-pulse
+      ${customer.status?.toLowerCase() === "active" ? "bg-emerald-400" : customer.status?.toLowerCase() === "pending" ? "bg-amber-400" : customer.status?.toLowerCase() === "inactive" ? "bg-red-400" : "bg-gray-400"}`}
+  ></div>
+
+                                    {customer.status ? customer.status.charAt(0).toUpperCase() + customer.status.slice(1) : "Not Available"}
+</span>
+
+                            </div>
+
+                            <div className="space-y-2.5">
+                                <div className="flex items-center gap-3 text-sm group/item">
+                                    <div
+                                        className="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center group-hover/item:bg-violet-500/20 transition-colors">
+                                        <Mail className="w-4 h-4 text-violet-400"/>
+                                    </div>
+                                    <span
+                                        className="text-white/70 truncate group-hover/item:text-white/90 transition-colors">{customer.email}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-sm group/item">
+                                    <div
+                                        className="w-9 h-9 rounded-xl bg-fuchsia-500/10 flex items-center justify-center group-hover/item:bg-fuchsia-500/20 transition-colors">
+                                        <Phone className="w-4 h-4 text-fuchsia-400"/>
+                                    </div>
+                                    <span
+                                        className="text-white/70 group-hover/item:text-white/90 transition-colors">{customer.phone}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>))) : (<div
+                        className="col-span-full flex flex-col items-center justify-center py-24 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10">
+                        <div
+                            className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center mb-6">
+                            <Users className="w-10 h-10 text-white/40"/>
+                        </div>
+                        <p className="text-white/80 text-xl font-semibold mb-2">No customers found</p>
+                        <p className="text-white/40">Try adjusting your search or add a new customer</p>
+                    </div>)}
                 </div>
             </div>
 
@@ -380,9 +379,11 @@ const Customer = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
                     <div className="relative w-full max-w-xl">
                         {/* Glow effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 rounded-3xl blur-3xl opacity-20"></div>
+                        <div
+                            className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 rounded-3xl blur-3xl opacity-20"></div>
 
-                        <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                        <div
+                            className="relative bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
                                     <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent mb-1">
@@ -402,9 +403,11 @@ const Customer = () => {
                                 <div>
                                     <label className="block text-sm font-semibold mb-3 text-white/90">Full Name</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
                                                 <User className="w-5 h-5 text-violet-400"/>
                                             </div>
                                             <input
@@ -419,11 +422,14 @@ const Customer = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold mb-3 text-white/90">Email Address</label>
+                                    <label className="block text-sm font-semibold mb-3 text-white/90">Email
+                                        Address</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-pink-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-fuchsia-600 to-pink-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-fuchsia-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-fuchsia-500/10 flex items-center justify-center">
                                                 <Mail className="w-5 h-5 text-fuchsia-400"/>
                                             </div>
                                             <input
@@ -438,11 +444,14 @@ const Customer = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold mb-3 text-white/90">Phone Number</label>
+                                    <label className="block text-sm font-semibold mb-3 text-white/90">Phone
+                                        Number</label>
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
                                         <div className="relative flex items-center">
-                                            <div className="absolute left-4 w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
                                                 <Phone className="w-5 h-5 text-cyan-400"/>
                                             </div>
                                             <input
@@ -456,25 +465,28 @@ const Customer = () => {
                                     </div>
                                 </div>
 
-                                {passwordField && (
-                                    <div>
-                                        <label className="block text-sm font-semibold mb-3 text-white/90">Password</label>
-                                        <div className="relative group">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
-                                            <div className="relative flex items-center">
-                                                <div className="absolute left-4 w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                                    <Lock className="w-5 h-5 text-emerald-400"/>
-                                                </div>
-                                                <input
-                                                    type="password"
-                                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                                    className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white/10 transition-all text-white placeholder-white/30 text-lg"
-                                                    placeholder="Enter secure password"
-                                                />
+                                {passwordField && (<div>
+                                    <label
+                                        className="block text-sm font-semibold mb-3 text-white/90">Password</label>
+                                    <div className="relative group">
+                                        <div
+                                            className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity"></div>
+                                        <div className="relative flex items-center">
+                                            <div
+                                                className="absolute left-4 w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                                <Lock className="w-5 h-5 text-emerald-400"/>
                                             </div>
+                                            <input
+                                                type="password"
+                                                onChange={(e) => setFormData({
+                                                    ...formData, password: e.target.value
+                                                })}
+                                                className="w-full pl-16 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white/10 transition-all text-white placeholder-white/30 text-lg"
+                                                placeholder="Enter secure password"
+                                            />
                                         </div>
                                     </div>
-                                )}
+                                </div>)}
 
                                 <div className="flex gap-4 pt-6">
                                     <button
@@ -493,22 +505,25 @@ const Customer = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                </div>)}
 
             {/* Ultra Modern Delete Modal */}
             {isDeleteOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
                     <div className="relative w-full max-w-md">
-                        <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-600 rounded-3xl blur-3xl opacity-20"></div>
+                        <div
+                            className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-600 rounded-3xl blur-3xl opacity-20"></div>
 
-                        <div className="relative bg-slate-900/90 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-8 shadow-2xl">
+                        <div
+                            className="relative bg-slate-900/90 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-8 shadow-2xl">
                             <div className="flex flex-col items-center text-center space-y-6">
                                 <div className="relative">
-                                    <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
+                                    <div
+                                        className="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
                                         <Trash2 className="w-10 h-10"/>
                                     </div>
-                                    <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-rose-600 rounded-3xl blur-2xl opacity-50"></div>
+                                    <div
+                                        className="absolute inset-0 bg-gradient-to-br from-red-500 to-rose-600 rounded-3xl blur-2xl opacity-50"></div>
                                 </div>
 
                                 <div>
@@ -539,8 +554,7 @@ const Customer = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                </div>)}
         </div>
     </>);
 };
