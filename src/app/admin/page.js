@@ -11,6 +11,7 @@ import axios from "axios";
 import Bookings from "@/components/adminModals/bookings";
 import Analytics from "@/components/adminModals/Analytics";
 import {promise} from "bcrypt/promises";
+import Customers from "@/components/adminModals/customers";
 
 export const adminContext = createContext();
 const AdminDashBoard = () => {
@@ -108,7 +109,6 @@ const AdminDashBoard = () => {
                 allBookings.push(...bookingsWithDetails);
             }
 
-            console.log("All bookings:", allBookings);
             setMergedData(allBookings);
         } catch (error) {
             console.error("Error fetching booking history:", error);
@@ -265,9 +265,11 @@ const AdminDashBoard = () => {
 
             {/* Main Content Area */}
             <main className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                <adminContext.Provider value={{setActiveTab, searchTerm, mergedData, bookingData, selectedPeriod,fetchBooking}}>
+                <adminContext.Provider
+                    value={{setActiveTab, searchTerm, mergedData, bookingData, selectedPeriod, fetchBooking}}>
                     {activeTab === 'overview' && <OverView/>}
                     {activeTab === 'bookings' && <Bookings/>}
+                    {activeTab === 'customers' && <Customers/>}
                     {activeTab === 'analytics' && <Analytics/>}
                 </adminContext.Provider>
             </main>

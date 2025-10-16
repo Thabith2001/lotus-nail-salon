@@ -9,8 +9,11 @@ import toast from "react-hot-toast";
 
 
 const Bookings = () => {
-    const {setActiveTab, searchTerm, mergedData, fetchBooking} = useContext(adminContext);
+    const {searchTerm, mergedData, fetchBooking} = useContext(adminContext);
 
+    useEffect(() => {
+        fetchBooking();
+    }, [])
 
     const handleExport = () => {
         const blob = new Blob([JSON.stringify(mergedData, null, 2)], {type: 'application/json'});

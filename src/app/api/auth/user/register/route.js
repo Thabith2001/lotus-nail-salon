@@ -2,40 +2,56 @@ import {NextResponse} from "next/server";
 import User from "@/model/userModel";
 import {connectDB} from "@/lib/mongoose";
 
-
 export async function POST(req) {
     await connectDB();
     try {
         const body = await req.json();
-        const {username, email, phone, password} = body;
+        const { username, email, phone, password } = body;
+
+        console.log("Received data:", body);
 
         if (!username || !email || !phone || !password) {
             return NextResponse.json(
-                {message: "All fields are required"},
-                {status: 400}
+                { message: "All fields are required" },
+                { status: 400 }
             );
         }
 
+        // Check if user already exists (by email or phone)
         const existingUser = await User.findOne({
-            $or: [{email}, {phone}],
+            $or: [{ email }, { phone }],
         });
+
         if (existingUser) {
             return NextResponse.json(
-                {message: "User already exists"},
-                {status: 400}
+                { message: "User already exists" },
+                { status: 400 }
             );
         }
 
-        const contact = phone.replace(/\s+/g, '');
-        const user = await User.create({username, email, contact, password});
+        // Clean phone number & create new user
+        const cleanedPhone = phone.replace(/\s+/g, '');
+        const user = await User.create({
+            username,
+            email,
+            phone: cleanedPhone,
+            password,
+        });
 
-        return NextResponse.json({
-            success: true,
-            message: "successfully registered",
-            user
-        }, {status: 201});
+        return NextResponse.json(
+            {
+                success: true,
+                message: "Successfully registered",
+                user,
+            },
+            { status: 201 }
+        );
     } catch (err) {
-        return NextResponse.json({success: false, error: err.message}, {status: 400});
+        console.error("Registration error:", err);
+        return NextResponse.json(
+            { success: false, error: err.message },
+            { status: 500 }
+        );
     }
 }
 
