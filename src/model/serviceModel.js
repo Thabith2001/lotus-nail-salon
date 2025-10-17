@@ -7,7 +7,7 @@ const serviceSchema = new mongoose.Schema(
         description: {type: String},
         duration: {type: String, required: true},
         price: {type: Number, required: true},
-        subscriptions: {type: String, default: null},
+        subscription: {type: String, default: null},
     },
     {timestamps: true}
 );

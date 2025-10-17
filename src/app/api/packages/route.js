@@ -1,6 +1,5 @@
-// app/api/packages/route.js
 import { NextResponse } from "next/server";
-import {connectDB} from "@/lib/mongoose";
+import { connectDB } from "@/lib/mongoose";
 import Package from "@/model/packagesModel";
 
 // ✅ GET all packages
@@ -24,7 +23,7 @@ export async function POST(req) {
     try {
         const data = await req.json();
 
-        const requiredFields = ["name", "price", "services"];
+        const requiredFields = ["id", "name", "price", "services"];
         for (const field of requiredFields) {
             if (!data[field]) {
                 return NextResponse.json(
@@ -34,8 +33,7 @@ export async function POST(req) {
             }
         }
 
-        const newPackage = new Package(data);
-        await newPackage.save();
+        const newPackage = await Package.create(data);
 
         return NextResponse.json(
             { success: true, package: newPackage },

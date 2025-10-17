@@ -1,9 +1,8 @@
-
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoose";
 import Service from "@/model/serviceModel";
 
-// GET all services
+
 export async function GET() {
     await connectDB();
     try {
@@ -11,30 +10,46 @@ export async function GET() {
         return NextResponse.json({ success: true, services }, { status: 200 });
     } catch (error) {
         console.error("GET services error:", error);
-        return NextResponse.json({ error: "Failed to fetch services" }, { status: 500 });
+        return NextResponse.json(
+            { success: false, error: "Failed to fetch services" },
+            { status: 500 }
+        );
     }
 }
 
-// POST: create a new service
+
 export async function POST(req) {
     await connectDB();
     try {
         const data = await req.json();
+        const { name, category, description, duration, price, subscription } = data;
 
-        // Optional: basic validation
-        const requiredFields = ["name", "price", "duration", "category"];
+
+        const requiredFields = ["name", "category", "duration", "price"];
         for (const field of requiredFields) {
             if (!data[field]) {
-                return NextResponse.json({ success: false, error: `${field} is required` }, { status: 400 });
+                return NextResponse.json(
+                    { success: false, error: `${field} is required` },
+                    { status: 400 }
+                );
             }
         }
 
-        const newService = new Service(data);
-        await newService.save();
+        const service = await Service.create({
+            name,
+            category,
+            description,
+            duration,
+            price,
+            subscription,
+        });
 
-        return NextResponse.json({ success: true, service: newService }, { status: 201 });
+        return NextResponse.json({ success: true, service }, { status: 201 });
     } catch (error) {
         console.error("POST service error:", error);
-        return NextResponse.json({ error: "Failed to create service" }, { status: 500 });
+        return NextResponse.json(
+            { success: false, error: "Failed to create service" },
+            { status: 500 }
+        );
     }
 }

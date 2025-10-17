@@ -217,18 +217,18 @@ const Header = () => {
                                     aria-haspopup="true"
                                 />
                                 {dropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-purple-950/20 backdrop-blur-lg shadow-2xl rounded-2xl py-2 z-50 border border-purple-900/20 animate-in slide-in-from-top-2 duration-200">
+                                    <div className="absolute right-0 mt-2 w-56 bg-purple-950/80 backdrop-blur-lg shadow-2xl rounded-2xl py-2 z-50 border border-purple-900/20 animate-in slide-in-from-top-2 duration-200">
                                         <Link
                                             href={user.role === "admin" ? "/admin" : "/appointment-details"}
-                                            className="block px-6 py-3 text-sm text-gray-700 hover:bg-purple-900/30 hover:text-white font-medium"
+                                            className="block px-6 py-3 text-sm text-gray-400 hover:bg-purple-900/30 hover:text-white font-medium"
                                             onClick={closeMenus}
                                         >
                                             {user.role === "admin" ? "Admin Dashboard" : "My Bookings"}
                                         </Link>
-                                        <hr className="border-purple-900/20 my-1" />
+                                        <hr className="border-purple-950/20 my-1" />
                                         <button
                                             onClick={logoutHandler}
-                                            className="w-full text-left px-6 py-3 text-sm text-red-900 hover:bg-purple-900/30 hover:text-red-400 font-medium"
+                                            className="w-full text-left px-6 py-3 text-sm text-red-300 hover:bg-purple-900/30 hover:text-red-500 font-medium"
                                         >
                                             Logout
                                         </button>

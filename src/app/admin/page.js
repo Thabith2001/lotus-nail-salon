@@ -12,6 +12,10 @@ import Bookings from "@/components/adminModals/bookings";
 import Analytics from "@/components/adminModals/Analytics";
 import Customers from "@/components/adminModals/customers";
 import Employees from "@/components/adminModals/employees";
+import ServiceModal from "@/components/adminModals/services";
+import SubscriptionManager from "@/components/adminModals/services";
+import Services from "@/components/ui/services";
+import Services_admin from "@/components/adminModals/services";
 
 export const adminContext = createContext();
 const AdminDashBoard = () => {
@@ -146,7 +150,7 @@ const AdminDashBoard = () => {
 
         {/* Sidebar */}
         <aside
-            className={`fixed left-0 top-0 h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10 transition-all duration-300 z-50 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 ${sidebarOpen ? 'w-64' : 'lg:w-20'}`}>
+            className={`fixed left-0 top-0 h-full bg-purple-950/90 backdrop-blur-xl border-r border-white/10 transition-all duration-300 z-50 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 ${sidebarOpen ? 'w-64' : 'lg:w-20'}`}>
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
                 {sidebarOpen && (<div className="flex items-center gap-3">
                     <div
@@ -202,7 +206,7 @@ const AdminDashBoard = () => {
         {/* Main Content */}
         <div className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
             {/* Header */}
-            <header className="bg-slate-900/50 backdrop-blur-xl border-b border-white/10 sticky top-0 z-30">
+            <header className="bg-purple-950/50 backdrop-blur-xl border-b border-white/10 sticky top-0 z-30">
                 <div className="p-4 sm:p-6">
                     <div className="flex items-center justify-between mb-4 sm:mb-0">
                         <button
@@ -272,6 +276,7 @@ const AdminDashBoard = () => {
                     {activeTab === 'customers' && <Customers/>}
                     {activeTab === 'analytics' && <Analytics/>}
                     {activeTab === 'employees' && <Employees/>}
+                    {activeTab === 'services' && <Services_admin/>}
                 </adminContext.Provider>
             </main>
         </div>

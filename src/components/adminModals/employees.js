@@ -439,7 +439,7 @@ const Employee = () => {
 
                                         {activeMenu === employee.id && (
                                             <div
-                                                className="absolute right-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-20">
+                                                className="absolute right-0 mt-2 w-56 bg-purple-900/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-20">
                                                 <button
                                                     onClick={() => openEditModal(employee)}
                                                     className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-violet-500/20 transition-all text-left group/item"
@@ -458,7 +458,7 @@ const Employee = () => {
                                                         className="w-9 h-9 rounded-xl bg-red-500/20 flex items-center justify-center group-hover/item:bg-red-500/30 transition-colors">
                                                         <Trash2 className="w-4 h-4 text-red-400"/>
                                                     </div>
-                                                    <span className="text-red-400 font-medium">Remove Employee</span>
+                                                    <span className="text-red-400 font-medium">Delete Employee</span>
                                                 </button>
                                             </div>
                                         )}
@@ -533,16 +533,16 @@ const Employee = () => {
 
             {/* Add/Edit Modal */}
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 rounded-2xl bg-black/80 backdrop-blur-xl">
                     <div className="relative w-full max-w-2xl">
                         <div
-                            className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 rounded-3xl blur-3xl opacity-20"></div>
+                            className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600   rounded-3xl blur-3xl opacity-20"></div>
 
                         <div
-                            className="relative bg-slate-900/90 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+                            className="relative bg-gradient-to-r from-purple-950/80 to-via-fuchsia-600/75 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
-                                    <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent mb-1">
+                                    <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400  bg-clip-text text-transparent mb-1">
                                         {editingEmployee ? "Edit Employee" : "Add New Employee"}
                                     </h2>
                                     <p className="text-white/50">Fill in the employee details below</p>
@@ -770,13 +770,13 @@ const Employee = () => {
 
             {/* Delete Modal */}
             {isDeleteOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+                <div className="fixed inset-0 z-50 flex items-center justify-center rounded-2xl p-4 bg-black/80 backdrop-blur-xl">
                     <div className="relative w-full max-w-md">
                         <div
                             className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-600 rounded-3xl blur-3xl opacity-20"></div>
 
                         <div
-                            className="relative bg-slate-900/90 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-8 shadow-2xl">
+                            className="relative bg-gradient-to-r from-purple-950/80 to-via-fuchsia-600/75 backdrop-blur-2xl border border-red-500/20 rounded-3xl p-8 shadow-2xl">
                             <div className="flex flex-col items-center text-center space-y-6">
                                 <div className="relative">
                                     <div
