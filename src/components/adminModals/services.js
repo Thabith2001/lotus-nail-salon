@@ -564,7 +564,7 @@ const Services_admin = () => {
                                     <Trash2 className="w-6 h-6 text-red-400" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-white">Delete {activeTab.slice(0, -1)}</h2>
+                                    <h2 className="text-xl font-bold text-white">Delete {activeTab}</h2>
                                     <p className="text-sm text-gray-400 mt-0.5">This action cannot be undone</p>
                                 </div>
                             </div>
