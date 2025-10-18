@@ -17,7 +17,6 @@ import {
     Tag,
     Trash2,
     TrendingUp,
-    UserPlus,
     X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -313,7 +312,7 @@ const Services_admin = () => {
                         onClick={openAddModal}
                         className="px-4 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 rounded-xl transition-all flex items-center gap-2 text-white font-medium shadow-lg shadow-violet-500/25 hover:scale-105 active:scale-95"
                     >
-                        <UserPlus className="w-4 h-4"/>
+                        <Package className="w-4 h-4"/>
                         <span>Add New</span>
                     </button>
                 </div>
