@@ -1,10 +1,10 @@
-// app/api/memberships/route.js
+
 import { NextResponse } from "next/server";
 
 import Membership from "@/model/membershipsModel";
 import {connectDB} from "@/lib/mongoose";
 
-// ✅ GET all memberships
+//  GET all memberships
 export async function GET() {
     await connectDB();
     try {
@@ -19,35 +19,34 @@ export async function GET() {
     }
 }
 
-// ✅ POST: create a new membership
-export async function POST(req) {
-    await connectDB();
+//  POST: create a new membership
+export const POST = async (req) => {
     try {
-        const data = await req.json();
+        await connectDB();
 
-        // Required fields for memberships
-        const requiredFields = ["name", "price", "description"];
-        for (const field of requiredFields) {
-            if (!data[field]) {
-                return NextResponse.json(
-                    { success: false, error: `${field} is required` },
-                    { status: 400 }
-                );
-            }
+        const body = await req.json();
+
+        const membership = {
+            subscription: body.subscription,
+            category: body.category,
+            name: body.name,
+            description: body.description,
+            price: Number(body.price),
+            originalPrice: Number(body.originalPrice),
+            savings: Number(body.savings),
+            benefits: body.benefits ,
+            features: body.features ,
+            sessions: body.sessions ,
+            recommended: body.recommended ,
+        };
+
+        if(membership){
+            const newMembership = await Membership.create(membership);
+            return NextResponse.json(newMembership, { status: 201 });
         }
 
-        const newMembership = new Membership(data);
-        await newMembership.save();
-
-        return NextResponse.json(
-            { success: true, membership: newMembership },
-            { status: 201 }
-        );
     } catch (error) {
-        console.error("POST membership error:", error.message);
-        return NextResponse.json(
-            { success: false, error: "Failed to create membership" },
-            { status: 500 }
-        );
+        console.error("Error creating membership:", error);
+        return NextResponse.json({ error: "Failed to create membership" }, { status: 500 });
     }
-}
+};

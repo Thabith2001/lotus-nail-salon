@@ -1,6 +1,5 @@
 import { Calendar, Check, Clock, Gift, Sparkles, Zap } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import Button from "@/components/buttons/buttons";
 import DynamicButton from "@/components/buttons/dynamicButton";
 
 const RenderPackages = ({ user, openAuth }) => {

@@ -5,10 +5,11 @@ import Membership from "@/model/membershipsModel";
 import {connectDB} from "@/lib/mongoose";
 
 // ✅ GET single membership by ID
-export async function GET(req, { params }) {
+export async function GET(req, context) {
     await connectDB();
     try {
-        const membership = await Membership.findById(params.id);
+        const { id } = context.params;
+        const membership = await Membership.findById(id);
         if (!membership)
             return NextResponse.json({ error: "Membership not found" }, { status: 404 });
 
@@ -23,9 +24,10 @@ export async function GET(req, { params }) {
 }
 
 // ✅ PATCH: update membership
-export async function PATCH(req, { params }) {
+export async function PATCH(req, context) {
     await connectDB();
     try {
+        const { id } = await context.params;
         const data = await req.json();
 
         // Only allow updates to these fields
@@ -33,8 +35,9 @@ export async function PATCH(req, { params }) {
             "name",
             "description",
             "price",
-            "duration", // in days/months
+            "duration",
             "benefits",
+            "originalPrice",
             "recommended",
             "color",
         ];
@@ -44,7 +47,7 @@ export async function PATCH(req, { params }) {
         });
 
         const updatedMembership = await Membership.findByIdAndUpdate(
-            params.id,
+            id,
             updateData,
             { new: true }
         );
@@ -63,10 +66,11 @@ export async function PATCH(req, { params }) {
 }
 
 // ✅ DELETE: delete membership
-export async function DELETE(req, { params }) {
+export async function DELETE(req, context) {
     await connectDB();
     try {
-        const deletedMembership = await Membership.findByIdAndDelete(params.id);
+        const { id } = await context.params;
+        const deletedMembership = await Membership.findByIdAndDelete(id);
         if (!deletedMembership)
             return NextResponse.json({ error: "Membership not found" }, { status: 404 });
 

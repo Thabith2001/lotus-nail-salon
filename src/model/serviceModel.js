@@ -8,6 +8,7 @@ const serviceSchema = new mongoose.Schema(
         duration: {type: String, required: true},
         price: {type: Number, required: true},
         subscription: {type: String, default: null},
+        popular: {type: Boolean, default: false},
     },
     {timestamps: true}
 );

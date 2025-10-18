@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
 
 const membershipSchema = new mongoose.Schema({
-    id: { type: String, required: true, unique: true },
-    subscription: { type: String, default: "membership" },
-    name: { type: String, required: true },
+    subscription: {type: String, default: "membership"},
+    category: {type: String, default: null},
+    name: {type: String, required: true},
     description: String,
-    price: { type: Number, required: true },
+    price: {type: Number, required: true},
+    originalPrice: Number,
     duration: Number,
+    savings: Number,
     benefits: [String],
     features: [String],
-    sessions:{type:String,default:null},
-    recommended: { type: Boolean, default: false },
-    color: String,
+    sessions: {type: String, default: null},
+    recommended: {type: Boolean, default: false},
+
 });
 
 export default mongoose.models.Membership ||

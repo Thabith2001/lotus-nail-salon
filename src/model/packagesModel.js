@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const packageSchema = new mongoose.Schema({
-    id: { type: String, required: true, unique: true },
+    id:{type: Object, required: true},
+    category: { type: String, default: null },
     subscription: { type: String, default: "package" },
     name: { type: String, required: true },
     description: String,
@@ -9,11 +10,10 @@ const packageSchema = new mongoose.Schema({
     originalPrice: Number,
     savings: Number,
     duration: Number,
-    popularity: String,
     services: [String],
     features: [String],
     recommended: { type: Boolean, default: false },
-    color: String,
+
 });
 
 export default mongoose.models.Package ||

@@ -22,8 +22,6 @@ export async function POST(req) {
     await connectDB();
     try {
         const data = await req.json();
-        const { name, category, description, duration, price, subscription } = data;
-
 
         const requiredFields = ["name", "category", "duration", "price"];
         for (const field of requiredFields) {
@@ -36,12 +34,13 @@ export async function POST(req) {
         }
 
         const service = await Service.create({
-            name,
-            category,
-            description,
-            duration,
-            price,
-            subscription,
+            name: data.name || 'Foot Treatment',
+            category: data.category || 'Pedicure',
+            description: data.description || 'Relaxing foot treatment with nail care and polish',
+            duration: data.duration || '50',
+            price: data.price || 55,
+            subscription: data.subscription || 'individual',
+            popular:data.popularity || false,
         });
 
         return NextResponse.json({ success: true, service }, { status: 201 });

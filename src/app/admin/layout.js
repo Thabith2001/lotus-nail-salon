@@ -1,5 +1,4 @@
-'use client';
-
+'use client'
 import { useRouter } from "next/navigation";
 import { BookingsProvider } from "@/context/adminContext";
 import { useAuth } from "@/context/authContext";

@@ -1,5 +1,6 @@
-import {Montserrat, Inter_Tight} from "next/font/google";
+import { Montserrat, Inter_Tight } from "next/font/google";
 import "@/styles/global.css";
+import ClientLayout from "@/app/client-layout";
 
 
 const inter_Tight = Inter_Tight({
@@ -7,15 +8,14 @@ const inter_Tight = Inter_Tight({
     subsets: ["cyrillic"],
     variable: "--font-inter-tight",
     display: "swap",
-})
+});
 
 const montserrat = Montserrat({
     weight: ["400", "500", "600", "700"],
     subsets: ["cyrillic"],
     variable: "--font-montserrat",
     display: "swap",
-})
-
+});
 
 export const metadata = {
     title: "Lotus Salon",
@@ -25,18 +25,12 @@ export const metadata = {
     },
 };
 
-export default function RootLayout({children}) {
+export default function RootLayout({ children }) {
     return (
-        <html lang="en" className={`${inter_Tight.variable}`}>
+        <html lang="en" className={`${inter_Tight.variable} ${montserrat.variable}`}>
         <body className="font-sans overflow-x-hidden">
-        <ClientLayout>
-                {children}
-        </ClientLayout>
+        <ClientLayout>{children}</ClientLayout>
         </body>
         </html>
     );
 }
-
-
-import ClientLayout from "./client-layout";
-import {BookingsProvider} from "@/context/adminContext";

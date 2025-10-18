@@ -3,10 +3,11 @@ import { connectDB } from "@/lib/mongoose";
 import Service from "@/model/serviceModel";
 
 
-export async function GET(req, { params }) {
+export async function GET(req, context) {
     await connectDB();
     try {
-        const service = await Service.findById(params.id);
+        const { id } = context.params;
+        const service = await Service.findById(id);
         if (!service) {
             return NextResponse.json(
                 { success: false, error: "Service not found" },
@@ -24,11 +25,22 @@ export async function GET(req, { params }) {
 }
 
 
-export async function PATCH(req, { params }) {
+export async function PATCH(req, context) {
     await connectDB();
     try {
+        const { id } = context.params;
         const data = await req.json();
-        const updatedService = await Service.findByIdAndUpdate(params.id, data, {
+
+        console.log("Received data:", data);
+        const updatedService = await Service.findByIdAndUpdate(id, {
+            name: data.name || 'Foot Treatment',
+            category: data.category || 'Pedicure',
+            description: data.description || 'Relaxing foot treatment with nail care and polish',
+            duration: data.duration || '50',
+            price: data.price || 55,
+            subscription: data.subscription || 'individual',
+            popular:data.popularity || false,
+        }, {
             new: true,
             runValidators: true,
         });
