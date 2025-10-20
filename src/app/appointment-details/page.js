@@ -47,56 +47,56 @@ const BookingHistory = () => {
         setLoadingAuth(false);
     }, [openAuth]);
 
+
+    const fetchBookingHistory = async () => {
+        if (!user?._id) {
+            setIsLoading(false);
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const bookingRes = await axios.get(`/api/bookings?userId=${user._id}`);
+            const bookings = bookingRes.data.bookings || [];
+
+            const bookingsWithDetails = await Promise.all(
+                bookings.map(async (b) => {
+                    let payment = null;
+                    let membership = null;
+
+                    try {
+                        if (b.paymentId) {
+                            const payRes = await axios.get(`/api/payments/${b.paymentId}`);
+                            payment = payRes.data.payment || null;
+                        }
+                    } catch (err) {
+                        console.error(`Payment fetch failed for ${b._id}:`, err);
+                    }
+
+                    try {
+                        if (b.userMembershipId) {
+                            const memRes = await axios.get(
+                                `/api/user-membership/${b.userMembershipId}`
+                            );
+                            membership = memRes.data.membership || null;
+                        }
+                    } catch (err) {
+                        console.error(`Membership fetch failed for ${b._id}:`, err);
+                    }
+
+                    return {...b, payment, membership};
+                })
+            );
+
+            setHistory(bookingsWithDetails);
+        } catch (error) {
+            console.error("Error fetching booking history:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     // Fetch booking history
     useEffect(() => {
-        const fetchBookingHistory = async () => {
-            if (!user?._id) {
-                setIsLoading(false);
-                return;
-            }
-
-            setIsLoading(true);
-            try {
-                const bookingRes = await axios.get(`/api/bookings?userId=${user._id}`);
-                const bookings = bookingRes.data.bookings || [];
-
-                const bookingsWithDetails = await Promise.all(
-                    bookings.map(async (b) => {
-                        let payment = null;
-                        let membership = null;
-
-                        try {
-                            if (b.paymentId) {
-                                const payRes = await axios.get(`/api/payments/${b.paymentId}`);
-                                payment = payRes.data.payment || null;
-                            }
-                        } catch (err) {
-                            console.error(`Payment fetch failed for ${b._id}:`, err);
-                        }
-
-                        try {
-                            if (b.userMembershipId) {
-                                const memRes = await axios.get(
-                                    `/api/user-membership/${b.userMembershipId}`
-                                );
-                                membership = memRes.data.membership || null;
-                            }
-                        } catch (err) {
-                            console.error(`Membership fetch failed for ${b._id}:`, err);
-                        }
-
-                        return {...b, payment, membership};
-                    })
-                );
-
-                setHistory(bookingsWithDetails);
-            } catch (error) {
-                console.error("Error fetching booking history:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchBookingHistory();
     }, [user]);
 

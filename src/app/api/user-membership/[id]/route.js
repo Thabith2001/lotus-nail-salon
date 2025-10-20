@@ -3,11 +3,11 @@ import { connectDB } from "@/lib/mongoose";
 import UserMembership from "@/model/userMembershipModel";
 
 
-export async function GET(req, { params }) {
+export async function GET(req, context) {
     await connectDB();
 
     try {
-        const { id } = await params;
+        const { id } = await context.params;
 
         const membership = await UserMembership.findById(id);
 
@@ -34,11 +34,11 @@ export async function GET(req, { params }) {
 }
 
 // PATCH update membership
-export async function PATCH(req, { params }) {
+export async function PATCH(req, context) {
     await connectDB();
 
     try {
-        const { id } = await params;
+        const { id } = await context.params;
         const data = await req.json();
 
         const updated = await UserMembership.findByIdAndUpdate(id, data, {
@@ -70,10 +70,10 @@ export async function PATCH(req, { params }) {
 }
 
 // DELETE membership
-export async function DELETE(req, { params }) {
+export async function DELETE(req, context) {
     await connectDB();
     try {
-        const { id } = params;
+        const { id } = context.params;
         const deleted = await UserMembership.findByIdAndDelete(id);
 
         if (!deleted) {

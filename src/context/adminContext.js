@@ -53,18 +53,7 @@ export const BookingsProvider = ({ children }) => {
             </div>
         );
     }
-
-
-    if (!isAdmin) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <h1 className="text-3xl font-semibold text-center text-red-600">
-                    You are not authorized to view this page.
-                </h1>
-            </div>
-        );
-    }
-
+    
     return (
         <BookingsContext.Provider value={{ bookingData, setBookingData, loading }}>
             {children}

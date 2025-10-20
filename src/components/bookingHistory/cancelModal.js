@@ -68,8 +68,16 @@ const CancelModal = () => {
 
         setIsLoading(true);
         setError("");
-
         try {
+
+            if (data.membershipPackage === "membership") {
+                const response = await axios.patch(`/api/user-membership/${data.membershipId}`, {
+                    remainingSessions: data.remainingSessions + 1,
+                   status : data?.mem_status === "expired" ?? "active",
+                });
+                console.log("membership response : ",response);
+            }
+
             const response = await axios.patch(`/api/bookings/${data.id}`, {
                 reasons: selectedReason || cancelReason,
                 status: "cancelled",
@@ -125,7 +133,7 @@ const CancelModal = () => {
                             <div className="bg-green-500/10 border border-green-300/20 rounded-xl p-4">
                                 <p className="text-green-300 text-sm mb-2">Refund Amount</p>
                                 <p className="text-white text-3xl font-bold mb-2">
-                                    ${refundAmount.toFixed(2)}
+                                    ${data?.membershipId ? "success fully cancelled" : refundAmount.toFixed(2)}
                                 </p>
                                 <p className="text-white/60 text-xs">
                                     Processed within 5-7 business days

@@ -143,8 +143,8 @@ const Auth = () => {
         }
 
         if (cleaned.startsWith('0')) {
-            cleaned = '+94' + cleaned.slice(1);
-        } else if (cleaned.startsWith('94')) {
+            cleaned = '+1' + cleaned.slice(1);
+        } else if (cleaned.startsWith('1')) {
             cleaned = '+' + cleaned;
         }
 

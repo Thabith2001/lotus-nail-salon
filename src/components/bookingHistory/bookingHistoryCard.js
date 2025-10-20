@@ -56,23 +56,12 @@ const HistoryCard = () => {
         }
 
         try {
-            // Create a new date object from the date string
             const bookingDate = new Date(dateString);
-
-            // Log for debugging
-            console.log('Original date string:', dateString);
-            console.log('Original time string:', timeString);
-            console.log('Parsed date object:', bookingDate);
-
-            // Parse the time - handle multiple formats
-            // Format 1: "14:30:00" or "14:30"
-            // Format 2: "2:30 PM" or "2:30PM"
-            // Format 3: "14:30:00.000Z"
 
             let hours = 0;
             let minutes = 0;
 
-            // Try to match time with optional AM/PM
+
             const timeWithMeridiem = timeString.match(/(\d+):(\d+)(?::\d+)?(?:\s*([AP]M))?/i);
 
             if (timeWithMeridiem) {
@@ -80,9 +69,8 @@ const HistoryCard = () => {
                 minutes = parseInt(timeWithMeridiem[2], 10);
                 const meridiem = timeWithMeridiem[3]?.toUpperCase();
 
-                console.log('Parsed time - hours:', hours, 'minutes:', minutes, 'meridiem:', meridiem);
 
-                // Convert to 24-hour format if AM/PM is present
+
                 if (meridiem === 'PM' && hours !== 12) {
                     hours += 12;
                 } else if (meridiem === 'AM' && hours === 12) {
@@ -92,11 +80,6 @@ const HistoryCard = () => {
 
             // Set the hours and minutes to the date object
             bookingDate.setHours(hours, minutes, 0, 0);
-
-            console.log('Final booking datetime:', bookingDate);
-            console.log('Current datetime:', new Date());
-            console.log('Is upcoming?', bookingDate > new Date());
-
             return bookingDate;
         } catch (error) {
             console.error('Error parsing booking date/time:', error, { dateString, timeString });
@@ -108,14 +91,12 @@ const HistoryCard = () => {
     const handleReschedule = (item) => {
         setReschedule(true);
         setData(item);
-        console.log("Reschedule booking:", item);
     };
 
     // Handle cancel booking
     const handleCancelBooking = (item) => {
         setCancel(true);
         setData(item);
-        console.log("Cancel booking:", item);
     };
 
     // Handle booking/rebook
@@ -154,7 +135,8 @@ const HistoryCard = () => {
                     },
                     purchaseDate: booking.membership.startDate,
                     expiryDate: booking.membership.endDate,
-                    status: booking.membership.status,
+                    mem_status: booking.membership.status,
+                    membershipId: booking.membership._id,
                     amount: booking.payment?.amount || 0,
                     paymentMethod: booking.payment?.method === "credit_card" ? "Credit Card" : "Other",
                     servicesUsed: booking.membership.sessions
@@ -168,23 +150,20 @@ const HistoryCard = () => {
                     membershipPackage: booking.membership.membershipPackage,
                     bookingStatus: booking.status,
                     cancellationDate: booking.cancellationDate,
+                    remainingSessions: booking.membership.remainingSessions,
                 };
             } else {
-                // Determine status based on booking status and date/time
+
                 let status;
 
-                // Priority 1: Check if cancelled
+
                 if (booking.status === "cancelled") {
                     status = "cancelled";
                 }
-                // Priority 2: Check if date/time has passed
                 else if (!isUpcoming) {
-                    // Booking date/time is in the past, so it's completed
                     status = "completed";
                 }
-                // Priority 3: Date/time is in the future
                 else if (isUpcoming) {
-                    // Check payment/confirmation status
                     if (booking.status === "confirmed" || booking.paymentStatus === "succeeded") {
                         status = "confirmed";
                     } else if (booking.status === "pending") {
@@ -193,7 +172,6 @@ const HistoryCard = () => {
                         status = "upcoming";
                     }
                 }
-                // Fallback
                 else {
                     status = "completed";
                 }
@@ -480,11 +458,11 @@ const HistoryCard = () => {
 
                                         <div
                                             className={`inline-flex items-center space-x-2 px-3 py-1 bg-gradient-to-r ${getStatusColor(
-                                                item.status
+                                                item.bookingStatus
                                             )} rounded-full text-white text-sm font-medium`}
                                         >
-                                            {getStatusIcon(item.status)}
-                                            <span className="capitalize">{item.status}</span>
+                                            {getStatusIcon(item.bookingStatus)}
+                                            <span className="capitalize">{item.bookingStatus}</span>
                                         </div>
                                     </div>
 
@@ -550,8 +528,8 @@ const HistoryCard = () => {
                                         </div>
                                     </div>
 
-                                    {item.status !== "expired" &&
-                                        item.status !== "cancelled" &&(
+                                    {item.mem_status !== "expired" &&
+                                        item.mem_status !== "cancelled" &&(
                                             <div
                                                 className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-300/20">
                                                 <div className="flex items-center justify-between">
@@ -586,8 +564,8 @@ const HistoryCard = () => {
                                             <span>Invoice</span>
                                         </button>
 
-                                        {item.status !== "expired" &&
-                                            item.status !== "cancelled" && (
+                                        {item.bookingStatus !== "expired" &&
+                                            item.bookingStatus !== "cancelled" && (
                                                 <>
                                                     <button
                                                         onClick={() => handleReschedule(item)}

@@ -85,16 +85,15 @@ const RenderPackages = ({ user, openAuth }) => {
                                 className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${theme.glow} blur-3xl -z-10`}
                             />
 
-                            {/* Recommended Badge */}
                             {pkg.recommended && (
-                                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-10">
+                                <div className=" w-[190px] absolute text-center -top-1 left-1/2 transform -translate-x-1/2 z-10">
                                     <div className="relative">
                                         <div
                                             className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 blur-lg opacity-50"/>
                                         <div
-                                            className="relative mt-2 px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-2">
+                                            className="relative  mt-2 px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-2">
                                             <Sparkles className="w-4 h-4"/>
-                                            <span>Most Popular</span>
+                                            <span >Most Popular</span>
                                             <Sparkles className="w-4 h-4"/>
                                         </div>
                                     </div>
