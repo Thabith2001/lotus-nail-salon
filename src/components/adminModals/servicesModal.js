@@ -439,16 +439,3 @@ const ServicesIU = ({
 };
 
 export default ServicesIU;
-
-
-// Services
-// Gel Art
-//
-// Custom Nail Art
-//
-// Full Spa Pedicure
-//
-// Paraffin Treatment
-//
-// Aromatherapy
-
