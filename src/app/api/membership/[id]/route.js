@@ -39,6 +39,7 @@ export async function PATCH(req, context) {
             "duration",
             "benefits",
             "features",
+            "savings",
             "originalPrice",
             "recommended",
         ];
