@@ -13,6 +13,9 @@ const ServicesIU = ({
                         selectedItem,
                         fetchData,
                     }) => {
+
+
+
     const handleInputChange = (e) => {
         const {name, value, type, checked} = e.target;
         setFormData((prev) => ({
@@ -164,7 +167,7 @@ const ServicesIU = ({
                                 </label>
                                 <select
                                     name="category"
-                                    value={formData.category || ""}
+                                    value={formData.category}
                                     onChange={handleInputChange}
                                     className="w-full px-4 py-3 border border-white/10 rounded-xl bg-slate-800/50 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                                     required

@@ -75,6 +75,7 @@ const Services_admin = () => {
                 services: item?.services || [''],
             }));
 
+            console.log('Fetched data:', items);
             setData(items);
         } catch (error) {
             console.error(`Failed to fetch ${activeTab}:`, error);
