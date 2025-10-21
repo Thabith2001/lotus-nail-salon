@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import Membership from "@/model/membershipsModel";
 import {connectDB} from "@/lib/mongoose";
 
-// ✅ GET single membership by ID
+//  GET single membership by ID
 export async function GET(req, context) {
     await connectDB();
     try {
@@ -23,7 +23,7 @@ export async function GET(req, context) {
     }
 }
 
-// ✅ PATCH: update membership
+//  PATCH: update membership
 export async function PATCH(req, context) {
     await connectDB();
     try {
@@ -35,11 +35,12 @@ export async function PATCH(req, context) {
             "name",
             "description",
             "price",
+            "category",
             "duration",
             "benefits",
+            "features",
             "originalPrice",
             "recommended",
-            "color",
         ];
         const updateData = {};
         allowedFields.forEach((field) => {
@@ -65,7 +66,7 @@ export async function PATCH(req, context) {
     }
 }
 
-// ✅ DELETE: delete membership
+//  DELETE: delete membership
 export async function DELETE(req, context) {
     await connectDB();
     try {

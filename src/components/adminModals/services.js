@@ -281,6 +281,20 @@ const Services_admin = () => {
                     </li>)}
                 </ul>
             </div>)}
+
+            {item.services?.length > 0 && item.services[0] !== '' && (<div className="pt-2 border-t border-white/10">
+                <p className="text-xs text-gray-400 mb-2 font-medium">Services</p>
+                <ul className="space-y-1">
+                    {item.services.slice(0, 2).map((b, idx) => (
+                        <li key={idx} className="text-xs text-gray-300 flex items-start gap-2">
+                            <span className="text-emerald-400 mt-0.5">✓</span>
+                            <span className="flex-1">{b}</span>
+                        </li>))}
+                    {item.services.length > 2 && (<li className="text-xs text-gray-400 italic">
+                        +{item.services.length - 2} more benefits
+                    </li>)}
+                </ul>
+            </div>)}
         </div>);
     };
 

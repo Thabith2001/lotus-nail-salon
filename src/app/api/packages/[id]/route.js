@@ -24,6 +24,7 @@ export async function PATCH(req, context) {
     try {
         const {id} = await context.params;
         const data = await req.json();
+
         const updatedPackage = await Package.findByIdAndUpdate(id, data, {
             new: true,
             runValidators: true,
